@@ -1,0 +1,11 @@
+{
+	"u_desc_expl": "Un texto que los demás usuarios pueden leer, úsalo para presentarte",
+	"u_desc": "Estado",
+	"u_nick": "Nombre",
+	"nav_home": "Home",
+	"nav_search": "Buscar",
+	"nav_chats": "Mensajes",
+	"nav_fav": "Favoritos",
+	"nav_profile": "Perfil",
+	"nav_settings": "Configuración"
+}

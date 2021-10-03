@@ -1,0 +1,86 @@
+{
+	"v": [
+		{ "name": "view1",
+			"layout": "column",
+			"components": [
+				{ "t": "Componente 1",
+					"z": "core",
+					"s": "Component1",
+					"p": {
+						"title": "Hello components",
+						"body": "nice import"
+					}
+				}
+			]
+		},
+		{ "name": "profile",
+			"layout": "column",
+			"components": []
+		},
+		{ "name": "settings",
+			"layout": "column",
+			"components": [
+				{ "t": "Componente 1",
+					"z": "core",
+					"s": "Component1",
+					"p": {
+						"title": "Hello settings",
+						"body": "nice import"
+					}
+				}
+			]
+		},
+		{ "name": "home",
+			"layout": "column",
+			"components": [
+				{ "t": "Componente 1",
+					"z": "core",
+					"s": "Component1",
+					"p": {
+						"title": "Hello home",
+						"body": "nice import"
+					}
+				}
+			]
+		},
+		{ "name": "search",
+			"layout": "column",
+			"components": [
+				{ "t": "Componente 1",
+					"z": "core",
+					"s": "Component1",
+					"p": {
+						"title": "Hello search",
+						"body": "nice import"
+					}
+				}
+			]
+		},
+		{ "name": "chats",
+			"layout": "column",
+			"components": [
+				{ "t": "Componente 1",
+					"z": "core",
+					"s": "Component1",
+					"p": {
+						"title": "Hello chats",
+						"body": "nice import"
+					}
+				}
+			]
+		},
+		{ "name": "fav",
+			"layout": "column",
+			"components": [
+				{ "t": "Componente 1",
+					"z": "core",
+					"s": "Component1",
+					"p": {
+						"title": "Hello favorites",
+						"body": "nice import"
+					}
+				}
+			]
+		}
+	]
+}

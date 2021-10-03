@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "site": "petcaperehominem-4c5c5",
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
