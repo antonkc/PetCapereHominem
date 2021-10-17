@@ -10,3 +10,7 @@ declare module 'https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js' {
 declare module 'https://www.gstatic.com/firebasejs/9.1.1/firebase-analytics.js' {
 	export * from 'firebase/analytics'
 }
+
+declare module 'https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js' {
+	export * from 'firebase/auth'
+}

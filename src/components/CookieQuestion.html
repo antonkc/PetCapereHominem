@@ -1,0 +1,73 @@
+<style>
+	#hoverPanel .cookieQuestion {
+		width: 100%;
+		height: 100%;
+	}
+	.cookieQuestion {
+		background-color: #f4f4f4;
+		border-bottom: 0.1rem solid #000;
+		min-height: 2rem;
+	}
+	.cookieQuestion #switch input{
+		height: 0;
+		width: 0;
+		opacity: 0;
+	}
+	.cookieQuestion #switch .slider{
+		cursor: pointer;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		border-radius: 2.5rem;
+		background-color: #646464;
+		-webkit-transition: .4s;
+		transition: .4s;
+	}
+	.cookieQuestion #switch .slider:before{
+		position: absolute;
+		content: "";
+		height: 2rem;
+		width: 2rem;
+		left: 0.2rem;
+		bottom: 0.2rem;
+		border-radius: 50%;
+		background-color: white;
+		-webkit-transition: .4s;
+		transition: .4s;
+	}
+	.cookieQuestion #switch input:checked + .slider {
+		background-color: #945383;
+	}
+	.cookieQuestion #switch input:checked + .slider:before {
+		-webkit-transform: translateX(2rem);
+		-ms-transform: translateX(2rem);
+		transform: translateX(2rem);
+	}
+	.cookieQuestion button {
+		display: inline-block;
+		width: 16rem;
+		padding: 0.5rem;
+		text-align: center;
+	}
+</style>
+<template id="cookieQuestion">
+	<div class="cookieQuestion">
+		<div id="mainPanel">
+			<h2 id="title"></h2>
+			<p id="cookieExpl"></p>
+			<div id="cookieForm">
+			</div>
+		</div>
+		<div id="controlPanel">
+			<button id="agreeSelection">selection</button>
+			<button id="agreeAll">all</button>
+		</div>
+	</div>
+</template>
+<template id="CookieSelector">
+	<div class="CookieSelector">
+		<span id="cookieType">tipo</span>: <span id="switch"><input type="checkbox" id="" class="slider" checked/></span>
+	</div>
+</template>

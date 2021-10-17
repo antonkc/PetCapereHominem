@@ -1,7 +1,7 @@
 
 export type IComponentQueueElement = {
 	param: any,
-	root: Element
+	root: HTMLElement
 }
 
 export type IComponentDefinition = {

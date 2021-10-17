@@ -1,4 +1,12 @@
 {
+	"cookie_title": "Hablemos de galletas",
+	"cookie_expl": "Este sitio web utiliza cookies para mejorar y personalizar tu experiencia, si quieres contianuar navegando debes aceptarlas.",
+	"cookie_agree_all": "Aceptar todas",
+	"cookie_agree": "Aceptar selección",
+	"cookie_preferences": "Preferencias",
+	"cookie_functional": "Funcionales",
+	"cookie_analytics": "Mejora de experiencia de usuario",
+	"cookie_adverisement": "Personalización anuncios",
 	"u_desc_expl": "Un texto que los demás usuarios pueden leer, úsalo para presentarte",
 	"u_desc": "Estado",
 	"u_nick": "Nombre",

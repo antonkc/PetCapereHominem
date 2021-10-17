@@ -1,17 +1,18 @@
+import BaseComponent, { componentUpdateArgs } from "./BaseComponent";
+import type DataCenter from "../js/DataCenter";
+
 // This is an example component
 type Component1Args = {
 	title: string,
 	body: string
 }
-class Component1 {
+class Component1 extends BaseComponent{
 	static _componentName = "Component1"
 
 	data: Component1Args;
-	templatesArea: Element;
-	root: HTMLElement;
 	rootTemplate: HTMLTemplateElement;
 
-	_assignFields(params: any){
+	_assignFields(params: Component1Args){
 		this.data.title = params.title ? params.title : this.data.title;
 		this.data.body = params.body ? params.body : this.data.body;
 	}
@@ -24,9 +25,8 @@ class Component1 {
 		this.root.querySelector('#body').textContent = this.data.body;
 	}
 
-	constructor(root: HTMLElement, params: Component1Args, templatesArea: HTMLElement) {
-		this.root = root;
-		this.templatesArea = templatesArea;
+	constructor(root: HTMLElement, params: Component1Args, templatesArea: HTMLElement, dataCenter: DataCenter) {
+		super(root, params, templatesArea, dataCenter);
 		this.rootTemplate = this.templatesArea.querySelector("#"+Component1._componentName);
 		this.data = {
 			title: "",
@@ -36,9 +36,13 @@ class Component1 {
 		this._update();
 	}
 
-	update(params:any){
-		this._assignFields(params);
-		this._update();
+	update: (params: componentUpdateArgs) => Component1 = ( params) => {
+		if(params.type === "reload"){
+			this._assignFields(params.args);
+			this._update();
+		}
+
+		return this;
 	}
 }
 
