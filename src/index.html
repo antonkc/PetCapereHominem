@@ -7,28 +7,25 @@
 	<title>Pet Capere</title>
 	<script defer src="/js/main.js" type="module"></script>
 	<link rel="stylesheet" href="/css/main.css">
+	<link rel="icon" href="/assets/icons/icon-192x192.png">
 	
 	<link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
 	<!-- ios support -->
-	<link rel="apple-touch-icon" href="assets/icons/icon-192x192.png" />
+	<link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png" />
 	<link rel="apple-touch-icon" href="/assets/icons/icon-256x256.png" />
 	<link rel="apple-touch-icon" href="/assets/icons/icon-384x384.png" />
 	<link rel="apple-touch-icon" href="/assets/icons/icon-512x512.png" />
 	<meta name="apple-mobile-web-app-status-bar" content="#fce8fc" />
 	<meta name="theme-color" content="#871287" />
+	<img src="/assets/icons/symbolCollection.svg" aria-hidden="true" style="display: none;"/>
 </head>
 <body>
 	<header>
 		<div id="innerHeader" class="inner">
 			<div id="banner">
-				<img src="/assets/icons/icon-512x512.png" alt="PetCap header image" id="headerImg"/>
 				<h1>Cabecera</h1>
 			</div>
 			<div id="toolRow">
-				<nav>
-					<a href='{"view":"profile"}' class="jsLink" data-target="profile" alt="">P</a>
-					<a href='{"view":"settings"}' class="jsLink" data-target="settings" alt="">S</a>
-				</nav>
 			</div>
 		</div>
 	</header>
@@ -39,10 +36,10 @@
 	<footer>
 		<div class="inner">
 			<nav>
-				<a href='{"view":"home"}' class="jsLink" data-target="home" alt="">H</a>
-				<a href='{"view":"search"}' class="jsLink" data-target="search" alt="">S</a>
-				<a href='{"view":"chats"}' class="jsLink" data-target="chats" alt="">C</a>
-				<a href='{"view":"fav"}' class="jsLink" data-target="fav" alt="">F</a>
+				<a href='./index.html?appState={"view":"home"}' class="jsLink" data-target="home" alt="">H</a>
+				<a href='./index.html?appState={"view":"search"}' class="jsLink" data-target="search" alt="">S</a>
+				<a href='./index.html?appState={"view":"chats"}' class="jsLink" data-target="chats" alt="">C</a>
+				<a href='./index.html?appState={"view":"fav"}' class="jsLink" data-target="fav" alt="">F</a>
 			</nav>
 		</div>
 	</footer>

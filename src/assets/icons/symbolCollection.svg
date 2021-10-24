@@ -8,7 +8,7 @@
    version="1.1"
    id="svg5"
    inkscape:version="1.1 (c68e22c387, 2021-05-23)"
-   sodipodi:docname="userAvatar.svg"
+   sodipodi:docname="symbolCollection.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -17,7 +17,7 @@
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:dc="http://purl.org/dc/elements/1.1/">
   <title
-     id="title16447">userAvatar</title>
+     id="title16447">symbolCollection</title>
   <sodipodi:namedview
      id="namedview7"
      pagecolor="#505050"
@@ -41,7 +41,7 @@
   <defs
      id="defs2">
     <symbol
-       id="g43">
+       id="userIcon">
       <rect
          style="fill:#ffffff;stroke-width:0.294305"
          id="rect16068"
@@ -71,7 +71,7 @@
     <rdf:RDF>
       <cc:Work
          rdf:about="">
-        <dc:title>userAvatar</dc:title>
+        <dc:title>symbolCollection</dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>

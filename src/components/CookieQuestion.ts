@@ -1,6 +1,6 @@
-import BaseComponent, { componentUpdateArgs } from "./BaseComponent";
-import type DataCenter from "../js/DataCenter";
-import type PetCap from "../js/PetCap";
+import BaseComponent, { componentUpdateArgs } from "./BaseComponent.js";
+import type DataCenter from "../js/DataCenter.js";
+import type PetCap from "../js/PetCap.js";
 
 // This is an example component
 type CookieQuestionArgs = {}
@@ -18,56 +18,66 @@ class CookieQuestion extends BaseComponent{
 	];
 
 	async _build() {
-		let petCap = (this.dataCenter.shared.PetCap as PetCap);
+		let petCap = (this.dataCenter.shared.petCap as PetCap);
 
 		this.root.innerHTML = "";
 		petCap.loadRes("Common").then((res: any)=> {
-			let clone = this.rootTemplate.content.cloneNode(true);
-			let elemDiv = clone.firstChild as HTMLElement;
-			let form = elemDiv.querySelector("#cookieForm");
-			elemDiv.querySelector("#title").textContent = res["cookie_title"];
-			elemDiv.querySelector("#cookieExpl").textContent = res["cookie_expl"];
-
-
-			CookieQuestion.cookies.forEach( (elem) => {
-				let switchClone = this.switchTemplate.content.cloneNode(true);
-				let switchDiv = switchClone.firstChild as HTMLElement;
-				let inputElem = switchDiv.querySelector("input");
-				inputElem.id = elem.id;
-				if(elem.readonly){
-					inputElem.readOnly = true;
-				}
-				switchDiv.querySelector("#cookieType").textContent = res[ "cookie_"+ elem.id];
-
-				form.appendChild(switchClone);
-			});
-
-			let btnSelection = elemDiv.querySelector("#agreeSelection");
-			btnSelection.textContent = res[ "cookie_agree"];
-			btnSelection.addEventListener("click", (ev) => {
-				let elems = elemDiv.querySelectorAll("input");
-				elems.forEach( elem => {
-					(petCap.userPreferences.cookies as any)[elem.id] = elem.checked;
+			try {
+				let clone = this.rootTemplate.content.cloneNode(true);
+				this.root.appendChild(clone);
+				let form = this.root.querySelector("#cookieForm");
+				this.root.querySelector("#title").textContent = res["cookie_title"];
+				this.root.querySelector("#cookieExpl").textContent = res["cookie_expl"];
+	
+	
+				CookieQuestion.cookies.forEach( (elem) => {
+					let switchClone = this.switchTemplate.content.cloneNode(true);
+					let switchDiv = switchClone.firstChild as HTMLElement;
+					let inputElem = switchDiv.querySelector("input") as HTMLInputElement;
+					inputElem.id = "input"+ elem.id;
+					inputElem.setAttribute("aria-describedby", elem.id);
+					if(elem.readonly){
+						inputElem.readOnly = true;
+						inputElem.disabled = true;
+					}
+					let lblElem = switchDiv.querySelector("label") as HTMLLabelElement;
+					lblElem.id = elem.id;
+	
+					switchDiv.querySelector("#"+ elem.id).textContent = res[ "cookie_"+ elem.id];
+	
+					form.appendChild(switchClone);
 				});
-
-				petCap.dataCenter.emmit("cookiePrefs",true);
-				ev.preventDefault();
-			});
-
-			let btnAll = elemDiv.querySelector("#agreeAll");
-			btnAll.textContent = res[ "cookie_agree_all"];
-			btnAll.addEventListener("click", (ev) => {
-				petCap.userPreferences.cookies.adverisement= true;
-				petCap.userPreferences.cookies.analytics= true;
-				petCap.userPreferences.cookies.functional= true;
-				petCap.userPreferences.cookies.preferences= true;
-				petCap.dataCenter.emmit("cookiePrefs",true);
-				ev.preventDefault();
-			});
-
-			this.root.appendChild(clone);
+	
+				let btnSelection = this.root.querySelector("#agreeSelection");
+				btnSelection.textContent = res[ "cookie_agree"];
+				btnSelection.addEventListener("click", (ev) => {
+					let elems = this.root.querySelectorAll("input");
+					elems.forEach( elem => {
+						(petCap.essetial.allowedUsage as any)[elem.id.replace("input","")] = elem.checked;
+					});
+	
+					petCap.dataCenter.emmit("cookiePrefs",true);
+					ev.preventDefault();
+				});
+	
+				let btnAll = this.root.querySelector("#agreeAll");
+				btnAll.textContent = res[ "cookie_agree_all"];
+				btnAll.addEventListener("click", (ev) => {
+					petCap.essetial.allowedUsage.adverisement= true;
+					petCap.essetial.allowedUsage.analytics= true;
+					petCap.essetial.allowedUsage.functional= true;
+					petCap.essetial.allowedUsage.preferences= true;
+					petCap.dataCenter.emmit("cookiePrefs",true);
+					ev.preventDefault();
+				});
+	
+				this.root.appendChild(clone);
+			} catch (err: any) {
+				console.error(err);
+			}
 		}).catch( (err: any) => {
-			console.error("Could not load resources for CookieQuestion", err);
+			console.log("Could not load resources for CookieQuestion");
+			console.error(err);
 		});
 	}
 
@@ -80,7 +90,7 @@ class CookieQuestion extends BaseComponent{
 		this._build();
 	}
 	
-	update: (params: componentUpdateArgs) => CookieQuestion = (params) => {
+	update(params: componentUpdateArgs) {
 		if(params.type = "reload"){
 			this._build();
 		}

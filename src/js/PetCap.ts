@@ -1,10 +1,11 @@
 import { Module } from "module";
 import ComponentLoader from "./ComponentLoader.js";
-import type { IComponentDefinition, IViewContainer} from "./types.js";
+import type { IComponentDefinition, IUserPreferences, IViewContainer} from "./types.js";
 import DataCenter from "./DataCenter.js";
 
 const urlParams : URLSearchParams = new URLSearchParams(window.location.search);
-ComponentLoader.dataCenter = DataCenter;
+const dataCenter = new DataCenter();
+ComponentLoader.dataCenter = dataCenter;
 
 const getView = (function(){
 	const views : Promise<IViewContainer> = (async () => {
@@ -35,11 +36,12 @@ class PetCap {
 		if(PetCap.singleton !== null){
 			return PetCap.singleton;
 		}
-		this.dataCenter = new DataCenter();
+		this.dataCenter = dataCenter;
 		this.dataCenter.shared.petCap = this;
 		PetCap.singleton = this;
 	}
 
+	_persistentLoaders: any = {};
 	_counters: any = {}
 	_loaders: any = {}
 	dataCenter: DataCenter
@@ -63,15 +65,15 @@ class PetCap {
 		}
 	})();
 
-	public userPreferences = {
-		cookies: {
+	public essetial: IUserPreferences = {
+		allowedUsage: {
 			functional: false,
 			preferences: false,
 			analytics: false,
 			adverisement: false
 		},
-		theme: "default",
 		lang: "es-es",
+		currency: "€"
 	};
 
 	public getNextId: (prefix?: string) => string = (prefix = "_") => {
@@ -80,6 +82,13 @@ class PetCap {
 
 		let id = prefix + this._counters[prefix]++;
 		return id;
+	}
+	public loadComponent = (componentName: string, root: HTMLElement, params: any) => {
+		if(this._persistentLoaders[componentName] === undefined) {
+			this._persistentLoaders[componentName] = new ComponentLoader(componentName);
+		}
+
+		(this._persistentLoaders[componentName] as ComponentLoader).load(root, params);
 	}
 	public loadView = async (viewName: string) => {
 		delete this._counters;

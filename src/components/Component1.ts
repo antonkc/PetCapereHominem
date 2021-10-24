@@ -1,5 +1,5 @@
-import BaseComponent, { componentUpdateArgs } from "./BaseComponent";
-import type DataCenter from "../js/DataCenter";
+import BaseComponent, { componentUpdateArgs } from "./BaseComponent.js";
+import type DataCenter from "../js/DataCenter.js";
 
 // This is an example component
 type Component1Args = {
@@ -36,7 +36,7 @@ class Component1 extends BaseComponent{
 		this._update();
 	}
 
-	update: (params: componentUpdateArgs) => Component1 = ( params) => {
+	update(params: componentUpdateArgs){
 		if(params.type === "reload"){
 			this._assignFields(params.args);
 			this._update();

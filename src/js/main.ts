@@ -2,7 +2,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-analytics.js";
 
-import PetCap from "./PetCap";
+import PetCap from "./PetCap.js";
+import type { IUserPreferences } from "./types.js";
 
 const petCap = new PetCap();
 
@@ -19,6 +20,53 @@ const petCap = new PetCap();
 	else {
 		console.warn("Browser does not support serviceWorker")
 	}
+})();
+(function essentialLoad(){
+	let essential: IUserPreferences = (()=>{
+		let essentialStr = localStorage.getItem("essential");
+		if(essentialStr !== null){
+			return JSON.parse(essentialStr);
+		} else {
+			return petCap.essetial;
+		}
+	})();
+
+	if(essential.allowedUsage.functional === false){
+		let hoverPaner = (document.querySelector("#hoverPanel") as HTMLElement);
+		petCap.loadComponent("CookieQuestion", hoverPaner, {});
+		hoverPaner.style.display = "";
+		petCap.dataCenter.get("cookiePrefs", ()=>{
+			hoverPaner.style.display = "none";
+			localStorage.setItem("essential", JSON.stringify(petCap.essetial));
+		});
+	}
+
+	let toolRow = (document.querySelector("#toolRow") as HTMLElement);
+	petCap.loadComponent("ProfileIcon", toolRow, {});
+
+})();
+(function firebaseInit(){
+	const firebaseConfig = {
+		apiKey: "AIzaSyDdy_c4fySNAxSb010ftlYW_t6QQ70KfII",
+		authDomain: "petcaperehominem.firebaseapp.com",
+		projectId: "petcaperehominem",
+		storageBucket: "petcaperehominem.appspot.com",
+		messagingSenderId: "621774205019",
+		appId: "1:621774205019:web:088f726e0624f611298f7e",
+		measurementId: "G-2R29MZX7JF"
+	};
+
+	const fireApp = initializeApp(firebaseConfig);
+	petCap.dataCenter.shared.fireApp = fireApp;
+	const auth = getAuth(fireApp);
+	petCap.dataCenter.shared.auth = auth;
+
+	petCap.dataCenter.get("cookiePrefs", ()=>{
+		if( petCap.essetial.allowedUsage.analytics){
+			const analytics = getAnalytics(fireApp);
+			petCap.dataCenter.shared.analytics = analytics;
+		}
+	});
 })();
 (function navigationInit(){
 	let elems = document.querySelectorAll('a[data-target]');
@@ -45,26 +93,13 @@ const petCap = new PetCap();
 
 	document.addEventListener("click", function navigationListener(ev){
 		let target: HTMLElement = ev.target as HTMLElement;
-		if(target.tagName === "A" && target.getAttribute("data-target") !== null) {
-			let hrefVal = JSON.parse(target.getAttribute("href"));
-			petCap.mergeState(hrefVal, target.getAttribute("alt"));
-			petCap.loadView(target.getAttribute("data-target"));
+		let dataTarget = target.getAttribute("data-target");
+		if(target.tagName === "A" && dataTarget !== null) {
+			ev.stopImmediatePropagation();
 			ev.preventDefault();
+			let hrefVal = {view: dataTarget};
+			petCap.mergeState(hrefVal, target.getAttribute("alt"));
+			petCap.loadView(dataTarget);
 		}
 	})
-})();
-(function firebaseInit(){
-	const firebaseConfig = {
-		apiKey: "AIzaSyDdy_c4fySNAxSb010ftlYW_t6QQ70KfII",
-		authDomain: "petcaperehominem.firebaseapp.com",
-		projectId: "petcaperehominem",
-		storageBucket: "petcaperehominem.appspot.com",
-		messagingSenderId: "621774205019",
-		appId: "1:621774205019:web:088f726e0624f611298f7e",
-		measurementId: "G-2R29MZX7JF"
-	};
-
-	const fireApp = initializeApp(firebaseConfig);
-	//const analytics = getAnalytics(fireApp);
-	const auth = getAuth(fireApp);
 })();

@@ -3,17 +3,20 @@ import BaseComponent from "../components/BaseComponent.js";
 import type DataCenter from "./DataCenter.js";
 
 class ComponentLoader {
-	static dataCenter: typeof DataCenter = null;
+	static dataCenter: DataCenter = null;
 	name: String;
 	component: typeof BaseComponent;
 	templateRoot: HTMLElement;
 	_queue: Array< IComponentQueueElement>;
 	handlers: Array< IComponentHandlerElement>;
 
-	static templatesContainer: Element= document.querySelector("#templatesContainer");
+	static templatesContainer: HTMLElement = null;
 	static componentsPath: string = window.location.origin + "/components/";
 
 	constructor(name : string){
+		if(ComponentLoader.templatesContainer === null){
+			ComponentLoader.templatesContainer = document.querySelector("#templatesContainer");
+		}
 		this.name = name;
 		this.component = null;
 		this.templateRoot = null;

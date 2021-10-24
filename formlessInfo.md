@@ -55,6 +55,7 @@ $ significa controlado por el sistema
 ### Pages
 	- id
 	- title
+	- lead-in
 	- body
 ## Firebase realtime database
 ### Chats

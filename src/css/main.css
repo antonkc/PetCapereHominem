@@ -2,6 +2,7 @@
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
+	min-width: 0;
 }
 
 body {
@@ -20,6 +21,8 @@ body {
 
 	align-items: stretch;
 	justify-items: stretch;
+	line-height: 1.45;
+	overflow-wrap: break-word;
 }
 
 body > * {
@@ -32,13 +35,14 @@ li, ul, ol {
 	padding: unset;
 }
 
-h1 {
+#innerHeader #banner h1 {
 	font-size: 1.8rem;
+	display: none;
 }
 
-@media (max-width: 23rem) {
-	#innerHeader > #banner > h1 {
-		display: none;
+@media (min-width: 22rem) {
+	#innerHeader #banner h1 {
+		display: inline;
 	}
 }
 
@@ -50,17 +54,27 @@ header, main, footer {
 	justify-content: center;
 }
 
+header, footer {
+	background-color: #f2f2f2;
+}
+
 .inner {
 	display: inline-block;
 	width: 100%;
-	max-width: 62rem;
-
-	background-color: #f2f2f2;
+	max-width: 64ch;
 }
 
 header {
 	grid-area: header;
 	overflow-y: auto;
+}
+
+@media (min-width: 50rem){
+	header{
+		background-image: url("/assets/icons/icon-512x512.png") #f2f2f2;
+		background-repeat: no-repeat;
+		background-size: 6rem 100%;
+	}
 }
 
 #innerHeader {
@@ -85,7 +99,6 @@ nav {
 
 #innerHeader > *{
 	display: flex;
-	flex: 1 1 2.5rem;
 	align-items: center;
 }
 
@@ -99,10 +112,9 @@ nav {
 	display: inline-block;
 }
 
-#banner img {
-	height: 100%;
-	width: 5rem;
-	clip: auto;
+#innerHeader > #toolRow{
+	display: flex;
+	flex: 0 1 12rem;
 }
 
 main {
@@ -110,6 +122,10 @@ main {
 
 	overflow-y: auto;
 	overflow-x: hidden;
+}
+
+main .inner {
+	max-width: 100%;
 }
 
 footer {
@@ -125,12 +141,21 @@ a.jsLink {
 	border-radius: 0.5rem;
 	border: 1px solid #0000004f;
 	background-color: #0000004f;
-	line-height: 3.5rem;
+	line-height: 3.5;
 	text-align: center;
 	vertical-align: middle;
 	word-wrap: break-word;
+	overflow: hidden;
 }
 
 a.jsLink * {
 	pointer-events: none;
+}
+
+#hoverPanel {
+	position: absolute;
+	width: 100%;
+	max-width: 62rem;
+	margin: 0 auto;
+	bottom: 0;
 }

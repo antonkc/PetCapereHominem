@@ -24,3 +24,14 @@ export type IViewDefinition = {
 export type IViewContainer = {
 	v: Array<IViewDefinition>
 }
+
+export type IUserPreferences = {
+	allowedUsage: {
+		functional: boolean,
+		preferences: boolean,
+		analytics: boolean,
+		adverisement: boolean
+	},
+	lang: string,
+	currency: string
+}

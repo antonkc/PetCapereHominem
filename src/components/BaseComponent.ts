@@ -19,7 +19,9 @@ class BaseComponent {
 		this.dataCenter = dataCenter;
 	}
 
-	update: (params: componentUpdateArgs) => BaseComponent;
+	update(params: componentUpdateArgs): BaseComponent{
+		return this;
+	};
 }
 
 export default BaseComponent;

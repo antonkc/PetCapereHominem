@@ -1,0 +1,26 @@
+<style>
+	.ProfileIcon {
+		width: 100%;
+		max-width: 12rem;
+		height: 100%;
+		padding: 0.25rem;
+		border: 1px solid grey;
+		border-radius: 1rem;
+		display: flex;
+		align-items: center;
+		overflow: hidden;
+	}
+	.ProfileIcon #userName{
+		flex: 1 1 8rem;
+	}
+	.ProfileIcon #avatar{
+		height: 3rem;
+		width: 3rem;
+		flex: 0 0 3rem;
+		border-radius: 50%;
+	}
+</style>
+<template id="ProfileIcon"><div class="ProfileIcon">
+		<span id="userName">Guest</span>
+		<svg id="avatar" alt="profile photo"> <use xlink:href="/assets/icons/symbolCollection.svg#userIcon"/></svg>
+	</div></template>
