@@ -51,7 +51,7 @@ class DataCenter{
 	/**
 	 * Runs callback as soon as the value for the key is available, but not sooner than setTimeout(callback, 0)
 	 */
-	get: (key: string, callback: (value: any) => void, isOneOff?: boolean) => typeof DataCenter = (key, callback, isOneOff) => {
+	get: (key: string, callback: (value: any) => void, isOneOff?: boolean) => DataCenter = (key, callback, isOneOff) => {
 		let subs = _getKeySubs(key);
 
 		if(subs[0].value !== undefined){
@@ -63,55 +63,76 @@ class DataCenter{
 			else _subscribe( subs, callback);
 		}
 
-		return DataCenter;
+		return this;
 	}
 	/**
 	 * Runs callback if there is an emmit for a related key
 	 */
-	subscribe: (key: string, callback: (value: any) => void, isOneOff?: boolean) => typeof DataCenter = (key, callback, isOneOff) => {
+	subscribe: (key: string, callback: (value: any) => void, isOneOff?: boolean) => DataCenter = (key, callback, isOneOff) => {
 		let subs = _getKeySubs(key);
 		if(isOneOff) _awaitValue( subs, callback);
 		else _subscribe( subs, callback);
 
-		return DataCenter;
+		return this;
 	}
 	/**
 	 * Runs all subscribers to key with value
 	 */
-	emmit: (key: string, value: any) => typeof DataCenter = (key, value) => {
+	emmit: (key: string, value: any) => DataCenter = (key, value) => {
 		let subs = _getKeySubs(key);
 		subs[0].value = value;
 
-		subs[0].fns.forEach((callback) => {
-			callback(value);
-		});
-		subs[1].fns.forEach((callback) => {
-			callback(value);
-		});
-		subs[1].fns = [];
+		setTimeout(() => {
+			subs[0].fns.forEach((callback) => {
+				try {
+					callback(value);
+				} catch (err) {
+					console.error(err);
+				}
+			});
+			subs[1].fns.forEach((callback) => {
+				try {
+					callback(value);
+				} catch (err) {
+					console.error(err);
+				}
+			});
+			subs[1].fns = [];
+		}, 0);
 
-		return DataCenter;
+		return this;
 	}
 	/**
 	 * Runs all subscribers to key with the return value of fn, can be aborted setting flag 0 to true
 	 */
-	advancedEmmit: (key: string, fn: (previousValue: any, eventContext: any, flags: IEmmitFlags) => any) => typeof DataCenter = (key, fn) => {
+	advancedEmmit: (key: string, fn: (previousValue: any, eventContext: any, flags: IEmmitFlags) => any) => DataCenter = (key, fn) => {
 		let subs = _getKeySubs(key);
 		let flags: IEmmitFlags = [false];
-		let answer = fn(subs[0].value, subs[0].eventContext, flags);
+		let value = fn(subs[0].value, subs[0].eventContext, flags);
 		
 		if(!flags[0]){
-			subs[0].value = answer;
-			subs[0].fns.forEach((callback) => {
-				callback(answer);
-			});
-			subs[1].fns.forEach((callback) => {
-				callback(answer);
-			});
-			subs[1].fns = [];
+			subs[0].value = value;
+
+			setTimeout(() => {
+				subs[0].fns.forEach((callback) => {
+					try {
+						callback(value);
+					} catch (err) {
+						console.error(err);
+					}
+				});
+				subs[1].fns.forEach((callback) => {
+					try {
+						callback(value);
+					} catch (err) {
+						console.error(err);
+					}
+				});
+				subs[1].fns = [];
+			}, 0);
 		}
 
-		return DataCenter;
+		return this;
 	}
 }
 

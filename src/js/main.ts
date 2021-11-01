@@ -58,8 +58,6 @@ const petCap = new PetCap();
 
 	const fireApp = initializeApp(firebaseConfig);
 	petCap.dataCenter.shared.fireApp = fireApp;
-	const auth = getAuth(fireApp);
-	petCap.dataCenter.shared.auth = auth;
 
 	petCap.dataCenter.get("cookiePrefs", ()=>{
 		if( petCap.essetial.allowedUsage.analytics){
@@ -95,11 +93,11 @@ const petCap = new PetCap();
 		let target: HTMLElement = ev.target as HTMLElement;
 		let dataTarget = target.getAttribute("data-target");
 		if(target.tagName === "A" && dataTarget !== null) {
-			ev.stopImmediatePropagation();
 			ev.preventDefault();
 			let hrefVal = {view: dataTarget};
 			petCap.mergeState(hrefVal, target.getAttribute("alt"));
 			petCap.loadView(dataTarget);
+			return false;
 		}
 	})
 })();

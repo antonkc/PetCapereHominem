@@ -13,7 +13,8 @@
 	"nav_home": "Home",
 	"nav_search": "Buscar",
 	"nav_chats": "Mensajes",
-	"nav_fav": "Favoritos",
+	"nav_favs": "Favoritos",
 	"nav_profile": "Perfil",
-	"nav_settings": "Configuración"
+	"nav_settings": "Configuración",
+	"gest":"Invitado"
 }

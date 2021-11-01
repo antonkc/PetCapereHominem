@@ -13,7 +13,8 @@ class ComponentLoader {
 	static templatesContainer: HTMLElement = null;
 	static componentsPath: string = window.location.origin + "/components/";
 
-	constructor(name : string){
+	constructor(name : string, isOnlyJs?: Boolean){
+		isOnlyJs = !!isOnlyJs;
 		if(ComponentLoader.templatesContainer === null){
 			ComponentLoader.templatesContainer = document.querySelector("#templatesContainer");
 		}
@@ -22,11 +23,14 @@ class ComponentLoader {
 		this.templateRoot = null;
 		this._queue = [];
 		this.handlers = [];
+		let promises: Array<Promise<void>> = [];
 
-		let js = (async () => {
+		promises.push((async () => {
 			this.component = (await import(`${ComponentLoader.componentsPath}${name}.js`)).default;
-		})();
-		let html = (async () => {
+		})());
+
+		if(isOnlyJs === false)
+		promises.push((async () => {
 			const res = await fetch(`${ComponentLoader.componentsPath}${name}.html`);
 			if(res.ok) {
 				let templates = await res.text();
@@ -37,12 +41,12 @@ class ComponentLoader {
 
 				ComponentLoader.templatesContainer.appendChild(templateRoot);
 				this.templateRoot = templateRoot;
-				return templateRoot;
+				return;
 			}
 			throw `{${name}} template html not retrieved`;
-		})();
+		})());
 		
-		Promise.all([js, html]).then( async () => {
+		Promise.all(promises).then( async () => {
 			this._queue.forEach( (elem) => {
 				this.handlers.push(new this.component(elem.root, elem.param, this.templateRoot, ComponentLoader.dataCenter));
 			} );

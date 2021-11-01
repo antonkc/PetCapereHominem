@@ -22,18 +22,18 @@
 		
 	}
 </style>
-<template id="CookieQuestion"><div class="CookieQuestion">
-		<div id="mainPanel" aria-modal="true">
-			<h2 id="title"></h2>
-			<p id="cookieExpl"></p>
-			<div id="cookieForm">
-			</div>
+<template id="CookieQuestion"><dialog class="CookieQuestion">
+	<div id="mainPanel" aria-modal="true">
+		<h2 id="title"></h2>
+		<p id="cookieExpl"></p>
+		<div id="cookieForm">
 		</div>
-		<div class="controlPanel">
-			<button id="agreeSelection">selection</button>
-			<button id="agreeAll">all</button>
-		</div>
-	</div></template>
+	</div>
+	<div class="controlPanel">
+		<button id="agreeSelection">selection</button>
+		<button id="agreeAll">all</button>
+	</div>
+</dialog></template>
 <template id="CookieSelector"><div class="CookieSelector">
-		<label id="cookieType"></label>: <input type="checkbox" id="" checked/>
-	</div></template>
+	<label id="cookieType"></label>: <input type="checkbox" id="" checked/>
+</div></template>

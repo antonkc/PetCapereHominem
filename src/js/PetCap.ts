@@ -83,9 +83,10 @@ class PetCap {
 		let id = prefix + this._counters[prefix]++;
 		return id;
 	}
-	public loadComponent = (componentName: string, root: HTMLElement, params: any) => {
+	public loadComponent = (componentName: string, root: HTMLElement, params: any, isOnlyJs?: Boolean) => {
+		isOnlyJs = !!isOnlyJs;
 		if(this._persistentLoaders[componentName] === undefined) {
-			this._persistentLoaders[componentName] = new ComponentLoader(componentName);
+			this._persistentLoaders[componentName] = new ComponentLoader(componentName, isOnlyJs);
 		}
 
 		(this._persistentLoaders[componentName] as ComponentLoader).load(root, params);

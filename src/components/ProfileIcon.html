@@ -9,18 +9,39 @@
 		display: flex;
 		align-items: center;
 		overflow: hidden;
+    color: inherit;
+    text-decoration: none;
+		background-color: white;
+	}
+	.ProfileIcon:hover {
+		filter: brightness(80%);
+    color: inherit;
+    text-decoration: none;
+		cursor:pointer;  
+	}
+	.ProfileIcon:active {
+		filter: brightness(40%);
+	}
+	.ProfileIcon * {
+		pointer-events: none;
 	}
 	.ProfileIcon #userName{
 		flex: 1 1 8rem;
 	}
-	.ProfileIcon #avatar{
+	.ProfileIcon #avatarContainer{
 		height: 3rem;
 		width: 3rem;
 		flex: 0 0 3rem;
 		border-radius: 50%;
+		overflow: hidden;
+	}
+	.ProfileIcon #avatar{
+		width: 100%;
+		height: 100%;
 	}
 </style>
-<template id="ProfileIcon"><div class="ProfileIcon">
-		<span id="userName">Guest</span>
-		<svg id="avatar" alt="profile photo"> <use xlink:href="/assets/icons/symbolCollection.svg#userIcon"/></svg>
-	</div></template>
+<template id="ProfileIcon"><a href='./index.html?appState={"view":"settings"}' data-target="settings" class="ProfileIcon">
+	<span id="userName"></span>
+	<span id="avatarContainer"><svg id="avatar" alt="profile photo"> <use xlink:href="/assets/icons/symbolCollection.svg#userIcon"/></svg></span>
+</a></template>
+<template id="genericUserImage"><svg id="avatar" alt="profile photo"> <use xlink:href="/assets/icons/symbolCollection.svg#userIcon"/></svg></template>
