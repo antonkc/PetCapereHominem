@@ -1,7 +1,6 @@
-import { Module } from "module";
-import ComponentLoader from "./ComponentLoader.js";
-import type { IComponentDefinition, IUserPreferences, IViewContainer} from "./types.js";
-import DataCenter from "./DataCenter.js";
+import type { IComponentDefinition, IUserPreferences, IViewContainer} from "src/js/types.js";
+import ComponentLoader from "src/js/ComponentLoader.js";
+import DataCenter from "src/js/DataCenter.js";
 
 const urlParams : URLSearchParams = new URLSearchParams(window.location.search);
 const dataCenter = new DataCenter();
@@ -65,7 +64,7 @@ class PetCap {
 		}
 	})();
 
-	public essetial: IUserPreferences = {
+	public userPrefs: IUserPreferences = {
 		allowedUsage: {
 			functional: false,
 			preferences: false,

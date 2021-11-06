@@ -5,6 +5,7 @@
     "noImplicitAny": true,
     "target": "es2020",
     "module": "es2020",
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "baseUrl": "./"
   }
 }

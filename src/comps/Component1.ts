@@ -1,5 +1,5 @@
-import BaseComponent, { componentUpdateArgs } from "./BaseComponent.js";
-import type DataCenter from "../js/DataCenter.js";
+import BaseComponent, { componentUpdateArgs } from "src/comps/BaseComponent.js";
+import type DataCenter from "src/js/DataCenter.js";
 
 // This is an example component
 type Component1Args = {

@@ -1,12 +1,11 @@
-import { type } from "os";
-import type DataCenter from "../js/DataCenter";
+import type DataCenter from "src/js/DataCenter";
 
 type componentUpdateArgs = {
 	type: string,
 	args?: any
 }
 
-export type { componentUpdateArgs };
+export type { componentUpdateArgs }
 
 class BaseComponent {
 	protected root: HTMLElement
@@ -21,7 +20,7 @@ class BaseComponent {
 
 	update(params: componentUpdateArgs): BaseComponent{
 		return this;
-	};
+	}
 }
 
 export default BaseComponent;

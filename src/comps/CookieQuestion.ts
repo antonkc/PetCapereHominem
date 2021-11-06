@@ -1,6 +1,6 @@
-import BaseComponent, { componentUpdateArgs } from "./BaseComponent.js";
-import type DataCenter from "../js/DataCenter.js";
-import type PetCap from "../js/PetCap.js";
+import BaseComponent, { componentUpdateArgs } from "src/comps/BaseComponent.js";
+import type DataCenter from "src/js/DataCenter.js";
+import type PetCap from "src/js/PetCap.js";
 
 // This is an example component
 type CookieQuestionArgs = {}
@@ -53,7 +53,7 @@ class CookieQuestion extends BaseComponent{
 				btnSelection.addEventListener("click", (ev) => {
 					let elems = this.root.querySelectorAll("input");
 					elems.forEach( elem => {
-						(petCap.essetial.allowedUsage as any)[elem.id.replace("input","")] = elem.checked;
+						(petCap.userPrefs.allowedUsage as any)[elem.id.replace("input","")] = elem.checked;
 					});
 	
 					petCap.dataCenter.emmit("cookiePrefs",true);
@@ -63,10 +63,10 @@ class CookieQuestion extends BaseComponent{
 				let btnAll = this.root.querySelector("#agreeAll");
 				btnAll.textContent = res[ "cookie_agree_all"];
 				btnAll.addEventListener("click", (ev) => {
-					petCap.essetial.allowedUsage.adverisement= true;
-					petCap.essetial.allowedUsage.analytics= true;
-					petCap.essetial.allowedUsage.functional= true;
-					petCap.essetial.allowedUsage.preferences= true;
+					petCap.userPrefs.allowedUsage.adverisement= true;
+					petCap.userPrefs.allowedUsage.analytics= true;
+					petCap.userPrefs.allowedUsage.functional= true;
+					petCap.userPrefs.allowedUsage.preferences= true;
 					petCap.dataCenter.emmit("cookiePrefs",true);
 					ev.preventDefault();
 				});
@@ -95,7 +95,7 @@ class CookieQuestion extends BaseComponent{
 			this._build();
 		}
 		return this;
-	};
+	}
 }
 
 export default CookieQuestion;

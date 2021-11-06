@@ -1,6 +1,6 @@
-import type { IComponentQueueElement, IComponentHandlerElement} from "./types.js";
-import BaseComponent from "../components/BaseComponent.js";
-import type DataCenter from "./DataCenter.js";
+import type { IComponentQueueElement, IComponentHandlerElement} from "src/js/types.js";
+import type BaseComponent from "src/comps/BaseComponent.js";
+import type DataCenter from "src/js/DataCenter.js";
 
 class ComponentLoader {
 	static dataCenter: DataCenter = null;
@@ -11,7 +11,7 @@ class ComponentLoader {
 	handlers: Array< IComponentHandlerElement>;
 
 	static templatesContainer: HTMLElement = null;
-	static componentsPath: string = window.location.origin + "/components/";
+	static componentsPath: string = window.location.origin + "/comps/";
 
 	constructor(name : string, isOnlyJs?: Boolean){
 		isOnlyJs = !!isOnlyJs;

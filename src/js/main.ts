@@ -2,8 +2,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-analytics.js";
 
-import PetCap from "./PetCap.js";
-import type { IUserPreferences } from "./types.js";
+import PetCap from "src/js/PetCap.js";
+import type { IUserPreferences } from "src/js/types.js";
 
 const petCap = new PetCap();
 
@@ -27,7 +27,7 @@ const petCap = new PetCap();
 		if(essentialStr !== null){
 			return JSON.parse(essentialStr);
 		} else {
-			return petCap.essetial;
+			return petCap.userPrefs;
 		}
 	})();
 
@@ -37,7 +37,7 @@ const petCap = new PetCap();
 		hoverPaner.style.display = "";
 		petCap.dataCenter.get("cookiePrefs", ()=>{
 			hoverPaner.style.display = "none";
-			localStorage.setItem("essential", JSON.stringify(petCap.essetial));
+			localStorage.setItem("essential", JSON.stringify(petCap.userPrefs));
 		});
 	}
 
@@ -60,7 +60,7 @@ const petCap = new PetCap();
 	petCap.dataCenter.shared.fireApp = fireApp;
 
 	petCap.dataCenter.get("cookiePrefs", ()=>{
-		if( petCap.essetial.allowedUsage.analytics){
+		if( petCap.userPrefs.allowedUsage.analytics){
 			const analytics = getAnalytics(fireApp);
 			petCap.dataCenter.shared.analytics = analytics;
 		}

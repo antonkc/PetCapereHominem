@@ -1,8 +1,8 @@
 import type { FirebaseApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js";
 import { Auth, getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js";
-import type DataCenter from "../js/DataCenter";
-import type PetCap from "../js/PetCap";
-import BaseComponent, { componentUpdateArgs } from "./BaseComponent.js";
+import type DataCenter from "src/js/DataCenter";
+import type PetCap from "src/js/PetCap";
+import BaseComponent, { componentUpdateArgs } from "src/comps/BaseComponent.js";
 
 class ProfileIcon extends BaseComponent {
 	rootTemplate: HTMLTemplateElement;
@@ -20,11 +20,16 @@ class ProfileIcon extends BaseComponent {
 			userNameElem.textContent = user.displayName;
 
 			avatarContainerElem.innerHTML = "";
-			let imgElem = document.createElement("img");
-			imgElem.id = "avatar";
-			imgElem.classList.add("profile", "photo");
-			imgElem.src = user.photoURL;
-			avatarContainerElem.appendChild(imgElem);
+			if(user.photoURL){
+				let imgElem = document.createElement("img");
+				imgElem.id = "avatar";
+				imgElem.classList.add("profile", "photo");
+				imgElem.src = user.photoURL;
+				avatarContainerElem.appendChild(imgElem);
+			}
+			else {
+				avatarContainerElem.appendChild(this.defaultAvatarTemplate.content.cloneNode(true));
+			}
 		}
 		else {
 			let res = await this.petCap.loadRes("common");
@@ -44,7 +49,7 @@ class ProfileIcon extends BaseComponent {
 	constructor(root: HTMLElement, params: {}, templatesArea: HTMLElement, dataCenter: DataCenter){
 		super(root, params, templatesArea, dataCenter);
 		this.petCap = (this.dataCenter.shared.petCap as PetCap);
-		const app = this.petCap.dataCenter.shared.fireApp as FirebaseApp;
+		const app = this.dataCenter.shared.fireApp as FirebaseApp;
 
 		this.rootTemplate = this.templatesArea.querySelector("#ProfileIcon");
 		this.defaultAvatarTemplate = this.templatesArea.querySelector("#genericUserImage");
@@ -53,9 +58,9 @@ class ProfileIcon extends BaseComponent {
 		this._build();
 
 		this.dataCenter.get("cookiePrefs", () => {
-			if(this.petCap.essetial.allowedUsage.functional){
+			if(this.petCap.userPrefs.allowedUsage.functional){
 				this.auth  = getAuth(app);
-				this.petCap.dataCenter.shared.auth = this.auth;
+				this.dataCenter.shared.auth = this.auth;
 
 				const user = this.auth.currentUser;
 				if (user !== null) {
