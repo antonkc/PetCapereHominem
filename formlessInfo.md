@@ -4,25 +4,22 @@
 
 # BBDD
 ## FireStore
-$ significa controlado por el sistema
-!1 Significa que sólo se puede asignar una vez
-&/# Significa que puede no estar
-? Significa que no tengo nada claro cómo va a ser
+ $ significa controlado por el sistema
+ !1 Significa que sólo se puede asignar una vez
+ &/# Significa que puede no estar
+ ? Significa que no tengo nada claro cómo va a ser
 
-### Users
-	Publico:
-		- id $
-		- icon (Icono de Perfil) $
-		- nick (Nombre)
-		- desc (Estado/descripción)
-		- upDate (Fecha alta) $
-		- cert (es entidad certificada) $
+### Profiles
+	Publico editable
+		- bio (Estado/descripción)
 		- pbMail (corre electrónico que quieras compartir, correo público)
-	Privado:
-		- mail (correo electrónico)
-		- tlf (teléfono)
-		- addr (dirección)
-		- subs (Posts a los que está suscrito) ?
+	Publico restringido
+		- upDate (Fecha alta)
+		- cert (es entidad verificada)
+	Privado editable
+		- subs (Posts a los que está suscrito)
+	Privado restringido
+		- id
 		- reportCount
 ### Posts
 	- id $
@@ -52,11 +49,6 @@ $ significa controlado por el sistema
 	- subspecies (raza)
 	- imgs (enlaces a las imágenes del animal)
 	- status (wantsOwner|adopted|lost|feral|deceased)
-### Pages
-	- id
-	- title
-	- lead-in
-	- body
 ## Firebase realtime database
 ### Chats
 	- id $ (Es posible que sea rentable plantear un sitema de Id para )

@@ -1,6 +1,6 @@
-import type { IComponentQueueElement, IComponentHandlerElement} from "src/js/types.js";
-import type BaseComponent from "src/comps/BaseComponent.js";
-import type DataCenter from "src/js/DataCenter.js";
+import BaseComponent from "../comps/BaseComponent";
+import DataCenter from "./DataCenter";
+import { IComponentHandlerElement, IComponentQueueElement } from "./types";
 
 class ComponentLoader {
 	static dataCenter: DataCenter = null;

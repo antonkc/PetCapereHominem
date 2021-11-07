@@ -14,8 +14,7 @@ const targetFile = "public/";
 const tscCompilerSettings = {
 	"target": 'es2020',
 	"module": "es2020",
-	"moduleResolution": "node",
-	"baseUrl": "./"
+	"moduleResolution": "node"
 };
 const htmlMinifierSettings = {
 	collapseWhitespace: true,
@@ -24,22 +23,6 @@ const htmlMinifierSettings = {
 	minifyJS: true
 };
 const cssMinifierSettings = {};
-
-// Good luck if these regExs don't work
-// First I tried making an universal import detection regEx, but making it this way looks faster in build time (despite still having a heavy burden)
-const srcSimpleImportFinder = /(import[ \n\t]+[^ \n\t\{\}]+[ \n\t]+from[ \n\t]*['"])src\//g;
-const srcNamedImportFinder = /(import[ \n\t]*\{(?:[ \n\t]*[^ \n\t"'\{\}]+[ \n\t]*,?)+\}[ \n\t]*from[ \n\t]*['"])src\//g;
-const srcBothImportFinder = /(import[ \n\t]+[^ \n\t\{\}]+[ \n\t]*,[ \n\t]*\{(?:[ \n\t]*[^ \n\t"'\{\}]+[ \n\t]*,?)+\}[ \n\t]*from[ \n\t]*['"])src\//g;
-const replaceFn = (match, $1) => {return $1 + "/"};
-const rewriteImports = through.obj((file, enc, cb) => {
-	try {
-		let txtContents = file.contents.toString(enc);
-		file.contents = Buffer.from(txtContents.replace(srcSimpleImportFinder, replaceFn).replace(srcNamedImportFinder, replaceFn).replace(srcBothImportFinder, replaceFn));
-		cb(null, file);
-	} catch (error) {
-		cb(error, file);
-	}
-});
 const minifyJSON = through.obj(function (file, enc, cb) {
 	try {
 		let jsonVal = JSON.parse(file.contents.toString(enc));
@@ -55,7 +38,7 @@ function clean(cb){
 }
 
 function ts(cb){
-	return src(["src/**/*.ts"],"src/").pipe(tsc(tscCompilerSettings)).pipe(rewriteImports).pipe(uglify()).pipe(dest(targetFile));
+	return src(["src/**/*.ts"],"src/").pipe(tsc(tscCompilerSettings)).pipe(uglify()).pipe(dest(targetFile));
 }
 
 function html(cb){
@@ -75,7 +58,7 @@ function js(cb){
 }
 
 function ts_dev(cb){
-	return src(["src/**/*.ts"],"src/").pipe(tsc(tscCompilerSettings)).pipe(rewriteImports).pipe(dest(targetFile));
+	return src(["src/**/*.ts"],"src/").pipe(tsc(tscCompilerSettings)).pipe(dest(targetFile));
 }
 
 function html_dev(cb){

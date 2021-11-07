@@ -1,4 +1,4 @@
-import type DataCenter from "src/js/DataCenter";
+import DataCenter from "../js/DataCenter"
 
 type componentUpdateArgs = {
 	type: string,

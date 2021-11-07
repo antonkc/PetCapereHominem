@@ -1,8 +1,9 @@
 import type { FirebaseApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js";
 import { Auth, getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js";
-import type DataCenter from "src/js/DataCenter";
-import type PetCap from "src/js/PetCap";
-import BaseComponent, { componentUpdateArgs } from "src/comps/BaseComponent.js";
+import DataCenter from "../js/DataCenter";
+import PetCap from "../js/PetCap";
+import BaseComponent, { componentUpdateArgs } from "./BaseComponent";
+
 
 class ProfileIcon extends BaseComponent {
 	rootTemplate: HTMLTemplateElement;

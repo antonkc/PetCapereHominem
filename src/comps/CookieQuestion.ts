@@ -1,6 +1,7 @@
-import BaseComponent, { componentUpdateArgs } from "src/comps/BaseComponent.js";
-import type DataCenter from "src/js/DataCenter.js";
-import type PetCap from "src/js/PetCap.js";
+import DataCenter from "../js/DataCenter";
+import PetCap from "../js/PetCap";
+import BaseComponent, { componentUpdateArgs } from "./BaseComponent";
+
 
 // This is an example component
 type CookieQuestionArgs = {}

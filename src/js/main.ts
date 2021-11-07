@@ -2,8 +2,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-analytics.js";
 
-import PetCap from "src/js/PetCap.js";
-import type { IUserPreferences } from "src/js/types.js";
+import { IUserPreferences } from "./types";
+import PetCap from "./PetCap";
 
 const petCap = new PetCap();
 
