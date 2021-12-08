@@ -16,5 +16,21 @@
 	"nav_favs": "Favoritos",
 	"nav_profile": "Perfil",
 	"nav_settings": "Configuración",
-	"gest":"Invitado"
+	"gest":"Invitado",
+	"notLogged": "No has iniciado sesión",
+	"loggedAs": "Has iniciado sesión como {{1}}",
+	"registerInstead": "¿No tienes cuenta? Registrate aquí",
+	"loginWith": "También pueden iniciar sesión con:",
+	"register": "Registrarte",
+	"password": "Contraseña",
+	"password2": "Repetir contraseña",
+	"login": "Iniciar sesión",
+	"logout": "Cerrar sesión",
+	"name": "Nombre de usuario",
+	"email": "Correo electrónico",
+	"logWGoogleImg": "Inicia sesión con Google",
+	"err_passShort": "La contraseña es demasiado corta (mínimo 9 carácteres)",
+	"err_passTooSimple": "La contraseña es demasiado simple (debe contener números, mayúsculas y minúsculas)",
+	"err_passNotSame": "Las contraseñas no coinciden",
+	"err_someErr": "Error: {{1}} ({{2}})"
 }

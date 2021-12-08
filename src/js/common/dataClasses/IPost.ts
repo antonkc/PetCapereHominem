@@ -1,7 +1,7 @@
-import IAddress from "./IAddress";
-import { ILightAnimal } from "./IAnimal";
-import { ILightProfile } from "./IProfile";
-import PostType from "./PostType";
+import type IAddress from "./IAddress";
+import type { ILightAnimal } from "./IAnimal";
+import type { ILightProfile } from "./IProfile";
+import type PostType from "./PostType";
 
 interface ILightPost {
 	id: string;

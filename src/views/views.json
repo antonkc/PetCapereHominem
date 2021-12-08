@@ -7,25 +7,37 @@
 					"z": "core",
 					"s": "Component1",
 					"p": {
-						"title": "Hello components",
-						"body": "nice import"
+						"title": "How did you end up here?",
+						"body": "As you see, there is nothing"
 					}
 				}
 			]
 		},
 		{ "name": "profile",
-			"layout": "column",
-			"components": []
-		},
-		{ "name": "settings",
-			"layout": "column",
+			"layout": "profile",
 			"components": [
-				{ "t": "Componente 1",
+				{ "t": "ProfileLessSettings",
 					"z": "core",
-					"s": "Component1",
+					"s": "profile/ProfileLessSettings",
 					"p": {
-						"title": "Hello settings",
-						"body": "nice import"
+						"title": "WIP",
+						"body": "Profile page is WIP"
+					}
+				},
+				{ "t": "ProfileSettings",
+					"z": "topCenter",
+					"s": "profile/ProfileSettings",
+					"p": {
+						"title": "WIP",
+						"body": "Profile page is WIP"
+					}
+				},
+				{ "t": "SettingsIcon",
+					"z": "topLeft",
+					"s": "profile/SettingsIcon",
+					"p": {
+						"title": "WIP",
+						"body": "Profile page is WIP"
 					}
 				}
 			]
@@ -37,8 +49,8 @@
 					"z": "core",
 					"s": "Component1",
 					"p": {
-						"title": "Hello home",
-						"body": "nice import"
+						"title": "WIP",
+						"body": "Home page is WIP"
 					}
 				}
 			]
@@ -50,8 +62,8 @@
 					"z": "core",
 					"s": "Component1",
 					"p": {
-						"title": "Hello search",
-						"body": "nice import"
+						"title": "WIP",
+						"body": "Search page is WIP"
 					}
 				}
 			]
@@ -63,8 +75,8 @@
 					"z": "core",
 					"s": "Component1",
 					"p": {
-						"title": "Hello chats",
-						"body": "nice import"
+						"title": "WIP",
+						"body": "Chats page is WIP"
 					}
 				}
 			]
@@ -76,8 +88,8 @@
 					"z": "core",
 					"s": "Component1",
 					"p": {
-						"title": "Hello favorites",
-						"body": "nice import"
+						"title": "WIP",
+						"body": "Favorites page is WIP"
 					}
 				}
 			]
@@ -85,11 +97,40 @@
 		{ "name": "post",
 			"layout": "column",
 			"components": [
+				{ "t": "Componente 1",
+					"z": "core",
+					"s": "Component1",
+					"p": {
+						"title": "WIP",
+						"body": "View post page is WIP"
+					}
+				}
 			]
 		},
 		{ "name": "pet",
 			"layout": "column",
 			"components": [
+				{ "t": "Componente 1",
+					"z": "core",
+					"s": "Component1",
+					"p": {
+						"title": "WIP",
+						"body": "View pet page is WIP"
+					}
+				}
+			]
+		},
+		{ "name": "aboutus",
+			"layout": "column",
+			"components": [
+				{ "t": "Componente 1",
+					"z": "core",
+					"s": "Component1",
+					"p": {
+						"title": "WIP",
+						"body": "About Us page is WIP"
+					}
+				}
 			]
 		}
 	]

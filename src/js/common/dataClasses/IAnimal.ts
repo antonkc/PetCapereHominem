@@ -1,4 +1,4 @@
-import AnimalStatus from "./AnimalStatus";
+import type AnimalStatus from "./AnimalStatus";
 
 interface ILightAnimal {
 	id: String;

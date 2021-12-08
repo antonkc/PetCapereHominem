@@ -1,6 +1,6 @@
-import BaseComponent from "../comps/BaseComponent";
-import DataCenter from "./DataCenter";
-import { IComponentHandlerElement, IComponentQueueElement } from "./types";
+import type BaseComponent from "../comps/BaseComponent.js";
+import type DataCenter from "./DataCenter.js";
+import type { IComponentHandlerElement, IComponentQueueElement } from "./types.js";
 
 class ComponentLoader {
 	static dataCenter: DataCenter = null;
@@ -56,7 +56,7 @@ class ComponentLoader {
 	}
 
 	_load(root: HTMLElement, param: any) {
-		const component = new this.component(root, param, this.templateRoot,  ComponentLoader.dataCenter);
+		const component = new this.component(root, param, this.templateRoot, ComponentLoader.dataCenter);
 		this.handlers.push(component);
 	}
 

@@ -1,0 +1,74 @@
+<style>
+	.profileSettings {
+		padding: 1rem;
+	}
+	.profileSettings .uSpace {
+		padding-bottom: 1rem;
+	}
+	.profileSettings .line {
+		display: flex;
+		border-bottom: 1px solid grey;
+		margin: 0 0 0.8rem;
+		white-space: nowrap;
+	}
+	.profileSettings label{
+		flex: 0 1 6rem;
+	}
+	.profileSettings .value{
+		flex: 1 1 8rem;
+		font-weight: 600;
+	}
+
+	.profileSettings .otherLoginForms {
+		display: flex;
+		flex-wrap: wrap;
+	}
+	.profileSettings .loginBlock {
+		display: inline-block;
+		flex: 1 1 4rem;
+		max-width: 5rem;
+		padding: 0.5rem;
+		border-radius: 1rem;
+		background-color: lightgrey;
+	}
+
+	.profileSettings .controls {
+		display: flex;
+		justify-content: flex-end;
+		gap: 0.5rem;
+	}
+</style>
+<template id="NotLogged"><div class="profileSettings">
+	<div class="uSpace"><h3 class="notLoggedText"></h3></div>
+	<form class="uSpace">
+		<div class="formContent uSpace">
+			<div class="line"><label for="email"></label><input type="text" class="value" id="email"/></div>
+			<div class="line"><label for="password"></label><input type="password" class="value" id="password"/></div>
+			<div id="pass2Line" class="line" style="display: none;"><label for="password2"></label><input type="password" class="value" id="password2"/></div>
+		</div>
+		<div class="controls uSpace"><button id="logIn"></button><button id="register"></button></div>
+		<div class="otherLoginForms">
+			<span id="alternateLoginsCaption"></span>
+			<div class="alternateLogins" title="Google">
+				<div id="logWithGoogle" class="loginBlock"><img src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="" /></div>
+			</div>
+		</div>
+	</form>
+	<div id="profileSettingsOutput"></div>
+</div></template>
+<template id="Logged"><div class="profileSettings">
+	<div><h3 class="loggedText"></h3></div>
+	<div class="authInfo">
+		<div class="line"><label for="name"></label><bdi class="value" id="name"></bdi></div>
+		<div class="line"><label for="email"></label><span class="value" id="email"></span></div>
+	</div>
+	<div class="dbInfo public">
+
+	</div>
+	<div class="dbInfo private">
+
+	</div>
+	<button id="logOut"></button>
+	<div id="profileSettingsOutput"></div>
+</div></template>
+<template id="ProfileSettingsMessage"><output class="profileSettingsMessage"></output></template>

@@ -1,11 +1,11 @@
-import DataCenter from "../js/DataCenter";
-import PetCap from "../js/PetCap";
-import BaseComponent, { componentUpdateArgs } from "./BaseComponent";
+import type DataCenter from "../js/DataCenter.js";
+import type PetCap from "../js/PetCap.js";
+import BaseComponent, { componentUpdateArgs } from "./BaseComponent.js";
 
 
 // This is an example component
 type CookieQuestionArgs = {}
-class CookieQuestion extends BaseComponent{
+class CookieQuestion extends BaseComponent<CookieQuestionArgs>{
 	static _componentName = "CookieQuestion"
 
 	rootTemplate: HTMLTemplateElement;
@@ -91,7 +91,7 @@ class CookieQuestion extends BaseComponent{
 		this._build();
 	}
 	
-	update(params: componentUpdateArgs) {
+	async update(params: componentUpdateArgs<CookieQuestionArgs>) {
 		if(params.type = "reload"){
 			this._build();
 		}

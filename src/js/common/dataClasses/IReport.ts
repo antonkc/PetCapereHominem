@@ -1,4 +1,4 @@
-import { ILightPost } from "./IPost";
+import type { ILightPost } from "./IPost";
 
 interface IReport {
 	id: String;

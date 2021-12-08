@@ -3,7 +3,7 @@ const { src, dest, parallel, series } = require('gulp');
 const gulp = require('gulp');
 const del = require('delete');
 const uglify = require('gulp-uglify');
-const babel = require('gulp-babel');
+const gbabel = require('gulp-babel');
 const tsc = require('gulp-typescript');
 const minHtml = require('gulp-htmlmin');
 const minCss = require('gulp-clean-css');
@@ -36,7 +36,6 @@ const minifyJSON = through.obj(function (file, enc, cb) {
 function clean(cb){
 	del(['./public/**'], cb);
 }
-
 function ts(cb){
 	return src(["src/**/*.ts"],"src/").pipe(tsc(tscCompilerSettings)).pipe(uglify()).pipe(dest(targetFile));
 }
@@ -54,7 +53,7 @@ function json(cb){
 }
 
 function js(cb){
-	return src(["src/**/*.js"],"src/").pipe(babel()).pipe(uglify()).pipe(dest(targetFile));
+	return src(["src/**/*.js"],"src/").pipe(gbabel()).pipe(uglify()).pipe(dest(targetFile));
 }
 
 function ts_dev(cb){
@@ -74,7 +73,7 @@ function json_dev(cb){
 }
 
 function js_dev(cb){
-	return src(["src/**/*.js"],"src/").pipe(babel()).pipe(dest(targetFile));
+	return src(["src/**/*.js"],"src/").pipe(gbabel()).pipe(dest(targetFile));
 }
 
 function static_files(cb){

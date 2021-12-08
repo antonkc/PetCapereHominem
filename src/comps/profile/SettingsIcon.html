@@ -1,0 +1,29 @@
+<style>
+	.settingsIcon .settIconControl {
+		border-radius: 50%;
+		overflow: hidden;
+	}
+	.settingsIcon .hoverControl {
+		display: flex;
+		align-items: center;
+		justify-items: center;
+		opacity: 0;
+		background-color: black;
+	}
+	.settingsIcon .hoverControl:hover {
+		opacity: 25%;
+	}
+	.settingsIcon .hoverControl:active {
+		opacity: 60%;
+	}
+</style>
+<template id="SettingsIcon"><div class="settingsIcon ratioParent">
+	<img aria-hidden="true" class="ratio" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="/>
+	<div class="ratioSlave settIconControl">
+		<span id="avatarContainer"><svg id="avatar" alt="profile photo"><use xlink:href="/assets/icons/symbolCollection.svg#userIcon"/></svg></span>
+		<div class="ratioSlave hoverControl">
+			<svg><use xlink:href="./assets/icons/symbolCollection.svg#pencilEdit"></use></svg>
+		</div>
+	</div>
+</div></template>
+<template id="genericUserImage"><svg id="avatar" alt="profile photo"><use xlink:href="/assets/icons/symbolCollection.svg#userIcon"/></svg></template>

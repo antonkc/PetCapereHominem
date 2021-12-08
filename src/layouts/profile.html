@@ -1,0 +1,44 @@
+<style>
+	.profileLayout {
+		max-width: calc(64ch + 1rem);
+		width: 100%;
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: 1fr 2fr;
+		grid-template-rows: auto auto;
+		grid-template-areas:
+			"icon icon"
+			"profileSett profileSett"
+			"otherSett otherSett";
+	}
+	@media (min-width: 28rem) {
+		.profileLayout {
+			grid-template-areas:
+				"icon profileSett"
+				"otherSett otherSett";
+		}
+	}
+	.profileLayout .zone > div {
+		margin: 0.5rem;
+	}
+	.profileLayout .topLeftZone {
+		grid-area: icon;
+	}
+	.profileLayout .topCenterZone {
+		grid-area: profileSett;
+	}
+	.profileLayout .coreZone {
+		grid-area: otherSett;
+	}
+</style>
+<div class="profileLayout">
+	<div class="zone topLeftZone">
+		<div data-zone="topLeft"></div>
+	</div>
+	<div class="zone topCenterZone">
+		<div data-zone="topCenter"></div>
+	</div>
+	<div class="zone coreZone">
+		<div data-zone="core"></div>
+	</div>
+</div>

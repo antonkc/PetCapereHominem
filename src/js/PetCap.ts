@@ -1,6 +1,6 @@
-import ComponentLoader from "./ComponentLoader";
-import DataCenter from "./DataCenter";
-import { IComponentDefinition, IUserPreferences, IViewContainer } from "./types";
+import ComponentLoader from "./ComponentLoader.js";
+import DataCenter from "./DataCenter.js";
+import type { IComponentDefinition, IUserPreferences, IViewContainer } from "./types";
 
 const urlParams : URLSearchParams = new URLSearchParams(window.location.search);
 const dataCenter = new DataCenter();
