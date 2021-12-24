@@ -5,7 +5,7 @@
 			"components": [
 				{ "t": "Componente 1",
 					"z": "core",
-					"s": "Component1",
+					"s": "global/Component1",
 					"p": {
 						"title": "How did you end up here?",
 						"body": "As you see, there is nothing"
@@ -47,7 +47,7 @@
 			"components": [
 				{ "t": "Componente 1",
 					"z": "core",
-					"s": "Component1",
+					"s": "global/Component1",
 					"p": {
 						"title": "WIP",
 						"body": "Home page is WIP"
@@ -60,7 +60,7 @@
 			"components": [
 				{ "t": "Componente 1",
 					"z": "core",
-					"s": "Component1",
+					"s": "global/Component1",
 					"p": {
 						"title": "WIP",
 						"body": "Search page is WIP"
@@ -73,7 +73,7 @@
 			"components": [
 				{ "t": "Componente 1",
 					"z": "core",
-					"s": "Component1",
+					"s": "global/Component1",
 					"p": {
 						"title": "WIP",
 						"body": "Chats page is WIP"
@@ -86,7 +86,7 @@
 			"components": [
 				{ "t": "Componente 1",
 					"z": "core",
-					"s": "Component1",
+					"s": "global/Component1",
 					"p": {
 						"title": "WIP",
 						"body": "Favorites page is WIP"
@@ -99,7 +99,7 @@
 			"components": [
 				{ "t": "Componente 1",
 					"z": "core",
-					"s": "Component1",
+					"s": "global/Component1",
 					"p": {
 						"title": "WIP",
 						"body": "View post page is WIP"
@@ -112,7 +112,7 @@
 			"components": [
 				{ "t": "Componente 1",
 					"z": "core",
-					"s": "Component1",
+					"s": "global/Component1",
 					"p": {
 						"title": "WIP",
 						"body": "View pet page is WIP"
@@ -125,7 +125,7 @@
 			"components": [
 				{ "t": "Componente 1",
 					"z": "core",
-					"s": "Component1",
+					"s": "global/Component1",
 					"p": {
 						"title": "WIP",
 						"body": "About Us page is WIP"

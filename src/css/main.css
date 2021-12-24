@@ -21,9 +21,9 @@ body {
 		"main"
 		"footer";
 
+	font-family: sans-serif;
 	align-items: stretch;
 	justify-items: stretch;
-	line-height: 1.45;
 	overflow-wrap: break-word;
 }
 
@@ -39,6 +39,11 @@ img {
 button {
 	font-size: inherit;
 	padding: 0.5rem;
+}
+
+input {
+	border: 1px solid grey;
+	border-radius: 0.4rem;
 }
 
 #innerHeader #banner h1 {
@@ -159,11 +164,18 @@ a.jsLink * {
 }
 
 #hoverPanel {
+	display: flex;
+
 	position: absolute;
 	width: 100%;
-	max-width: 62rem;
-	margin: 0 auto;
-	bottom: 0;
+	height: 100%;
+	top: 0;
+	left: 0;
+
+	align-items: center;
+	justify-items: center;
+
+	background-color: #00000060;
 }
 
 .ratioParent {

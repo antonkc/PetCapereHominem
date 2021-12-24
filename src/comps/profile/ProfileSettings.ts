@@ -14,7 +14,7 @@ enum MsgType {
 	error
 }
 
-type profileSettingsMessage = {
+type IProfileSettingsMessage = {
 	baseCode: string,
 	msgType: MsgType,
 	placeHolderFillers: Array<string>
@@ -29,7 +29,7 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 	protected notLoggedTemplate: HTMLTemplateElement
 	protected messageTemplate: HTMLTemplateElement
 
-	protected override async _authUpdated() {
+	protected override async authUpdated() {
 		let res = await this.petCap.loadRes("common");
 		
 		if(this.isLogged){
@@ -53,7 +53,7 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 			this.root.querySelector("[for='email']").textContent = res["email"];
 			this.root.querySelector("[for='password']").textContent = res["password"];
 			this.root.querySelector("[for='password2']").textContent = res["password2"];
-			this.root.querySelector("#alternateLoginsCaption").textContent = res["loginWith"];
+			this.root.querySelector("#alternateLoginsText").textContent = res["loginWith"];
 			this.root.querySelector("#logWithGoogle>img").setAttribute("alt", res["logWGoogleImg"]);
 			
 
@@ -66,23 +66,24 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 
 			registerButton.addEventListener("click", async (ev) => {
 				ev.preventDefault();
+				this.clearMessages();
 				if(this.isRegisterForm){
-					let passCheck = this._isValidPassword();
+					let passCheck = this.isValidPassword();
 					if(passCheck.valid){
 						try {
-							createUserWithEmailAndPassword(this.auth, this._getInformedEmail(), this._getInformedPass());
+							await createUserWithEmailAndPassword(this.auth, this.getInformedEmail(), this.getInformedPass());
 						}
 						catch (err) {
 							console.error(err);
-							this._writeMessages(res, [{
+							this.writeMessages(res, [{
 								baseCode: "err_someErr",
 								msgType: MsgType.error,
-								placeHolderFillers: [err.message, err.code]
+								placeHolderFillers: [err.message]
 							}]);
 						}
 					}
 					else {
-						this._writeMessages(res, passCheck.codes.map((val) => {
+						this.writeMessages(res, passCheck.codes.map((val) => {
 							return {
 								baseCode: val,
 								msgType: MsgType.error,
@@ -92,24 +93,25 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 					}
 				}
 				else {
-					this._showRegisterForm();
+					this.showRegisterForm();
 				}
 			});
 			loginButton.addEventListener("click", async (ev) => {
 				ev.preventDefault();
+				this.clearMessages();
 				if(this.isRegisterForm){
-					this._showLoginForm();
+					this.showLoginForm();
 				}
 				else {
 					try {
-						signInWithEmailAndPassword(this.auth, this._getInformedEmail(), this._getInformedPass());
+						await signInWithEmailAndPassword(this.auth, this.getInformedEmail(), this.getInformedPass());
 					}
 					catch (err) {
 						console.error(err);
-						this._writeMessages(res, [{
+						this.writeMessages(res, [{
 							baseCode: "err_someErr",
 							msgType: MsgType.error,
-							placeHolderFillers: [err.message, err.code]
+							placeHolderFillers: [err.message]
 						}]);
 					}
 				}
@@ -118,16 +120,17 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 			
 			let logWithGoogle = this.root.querySelector("#logWithGoogle") as HTMLElement;
 			logWithGoogle.addEventListener("click", async (ev) => {
+				this.clearMessages();
 				const provider = new GoogleAuthProvider();
 				try {
-					signInWithPopup(this.auth, provider);
+					await signInWithPopup(this.auth, provider);
 				}
 				catch (err) {
 					console.error(err);
-					this._writeMessages(res, [{
+					this.writeMessages(res, [{
 						baseCode: "err_someErr",
 						msgType: MsgType.error,
-						placeHolderFillers: [err.message, err.code]
+						placeHolderFillers: [err.message]
 					}]);
 				}
 			});
@@ -139,27 +142,27 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 		this.loggedTemplate = this.templatesArea.querySelector("#Logged");
 		this.notLoggedTemplate = this.templatesArea.querySelector("#NotLogged");
 		this.messageTemplate = this.templatesArea.querySelector("#ProfileSettingsMessage");
-		this._authUpdated();
+		this.authUpdated();
 	}
 
 	async update(params: componentUpdateArgs<ProfileSettingsArgs>){
 		if(params.type === "reload"){
-			this._authUpdated();
+			this.authUpdated();
 		}
 
 		return this;
 	}
 
-	protected _showRegisterForm(): void{
+	protected showRegisterForm(): void{
 		(this.root.querySelector("#pass2Line") as HTMLElement).style.display = "";
 		this.isRegisterForm = true;
 	}
-	protected _showLoginForm(): void{
+	protected showLoginForm(): void{
 		(this.root.querySelector("#pass2Line") as HTMLElement).style.display = "none";
 		this.isRegisterForm = false;
 	}
 
-	protected _isValidPassword(): valitationResult {
+	protected isValidPassword(): valitationResult {
 		let answer: valitationResult = {valid: true, codes: []};
 		let passElem: HTMLInputElement = this.root.querySelector("#password");
 		let pass2Elem: HTMLInputElement = this.root.querySelector("#password2");
@@ -179,7 +182,7 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 
 		return answer;
 	}
-	protected _getInformedEmail(): string {
+	protected getInformedEmail(): string {
 		let emailElem: HTMLInputElement = this.root.querySelector("#email");
 
 		if(emailElem){
@@ -188,7 +191,7 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 
 		return "";
 	}
-	protected _getInformedPass(): string {
+	protected getInformedPass(): string {
 		let passwordElem: HTMLInputElement = this.root.querySelector("#password");
 
 		if(passwordElem){
@@ -198,7 +201,7 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 		return "";
 	}
 
-	protected _writeMessages( resources: any, messages: Array<profileSettingsMessage>): void {
+	protected writeMessages( resources: any, messages: Array<IProfileSettingsMessage>): void {
 		let outputDiv = this.root.querySelector("#profileSettingsOutput") as HTMLElement;
 
 		messages.forEach((msg) => {
@@ -219,6 +222,10 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 					break;
 			}
 		});
+	}
+	protected clearMessages(): void {
+		let outputDiv = this.root.querySelector("#profileSettingsOutput") as HTMLElement;
+		outputDiv.innerHTML = "";
 	}
 }
 

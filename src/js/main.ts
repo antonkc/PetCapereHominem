@@ -1,8 +1,9 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js";
+import { FirebaseOptions, initializeApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-analytics.js";
 
-import type { IUserPreferences } from "./types";
+import type { IUserPreferences } from "./types/types.js";
 import PetCap from "./PetCap.js";
+import g from "./common/Consts.js";
 
 const petCap = new PetCap();
 
@@ -17,12 +18,16 @@ const petCap = new PetCap();
 		});
 	}
 	else {
-		console.warn("Browser does not support serviceWorker")
+		console.warn("Browser does not support serviceWorker");
 	}
 })();
 (function essentialLoad(){
+	let toolRow = (document.querySelector("#toolRow") as HTMLElement);
+	petCap.loadComponent("global/ProfileIcon", toolRow, {});
+
+	const userDataPreferencesName = "essential"
 	let essential: IUserPreferences = (()=>{
-		let essentialStr = localStorage.getItem("essential");
+		let essentialStr = localStorage.getItem(userDataPreferencesName);
 		if(essentialStr !== null){
 			return JSON.parse(essentialStr);
 		} else {
@@ -30,35 +35,37 @@ const petCap = new PetCap();
 		}
 	})();
 
-	if(essential.allowedUsage.functional === false){
+	if(essential.allowedUsage.functional === false) {
 		let hoverPaner = (document.querySelector("#hoverPanel") as HTMLElement);
-		petCap.loadComponent("CookieQuestion", hoverPaner, {});
+		petCap.loadComponent("global/CookieQuestion", hoverPaner, {});
 		hoverPaner.style.display = "";
-		petCap.dataCenter.get("cookiePrefs", ()=>{
+		petCap.dataCenter.subscribe(g.cookieEventName, ()=>{
 			hoverPaner.style.display = "none";
-			localStorage.setItem("essential", JSON.stringify(petCap.userPrefs));
-		});
+		}, true);
 	}
-
-	let toolRow = (document.querySelector("#toolRow") as HTMLElement);
-	petCap.loadComponent("ProfileIcon", toolRow, {});
-
+	else {
+		petCap.userPrefs = essential;
+		petCap.dataCenter.emmit(g.cookieEventName, true);
+	}
+	petCap.dataCenter.subscribe(g.cookieEventName, ()=>{
+		localStorage.setItem(userDataPreferencesName, JSON.stringify(petCap.userPrefs));
+	});
 })();
 (function firebaseInit(){
-	const firebaseConfig = {
+	const firebaseConfig : FirebaseOptions = {
 		apiKey: "AIzaSyDdy_c4fySNAxSb010ftlYW_t6QQ70KfII",
+		appId: "1:621774205019:web:088f726e0624f611298f7e",
 		authDomain: "petcaperehominem.firebaseapp.com",
+		measurementId: "G-2R29MZX7JF",
+		messagingSenderId: "621774205019",
 		projectId: "petcaperehominem",
 		storageBucket: "petcaperehominem.appspot.com",
-		messagingSenderId: "621774205019",
-		appId: "1:621774205019:web:088f726e0624f611298f7e",
-		measurementId: "G-2R29MZX7JF"
 	};
 
 	const fireApp = initializeApp(firebaseConfig);
 	petCap.dataCenter.shared.fireApp = fireApp;
 
-	petCap.dataCenter.get("cookiePrefs", ()=>{
+	petCap.dataCenter.get(g.cookieEventName, ()=>{
 		if( petCap.userPrefs.allowedUsage.analytics){
 			const analytics = getAnalytics(fireApp);
 			petCap.dataCenter.shared.analytics = analytics;

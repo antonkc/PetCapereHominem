@@ -1,8 +1,10 @@
 enum DbColletions {
-	Profiles = "Profiles",
-	Posts = "Posts",
-	Reports = "Reports",
-	Animals = "Animal"
+	Profiles = "profiles",
+	PrivateProfiles = "privateProfiles",
+	SysProfiles = "sysProfiles",
+	Posts = "posts",
+	Reports = "reports",
+	Animals = "animals"
 }
 
 export default DbColletions;

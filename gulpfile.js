@@ -14,6 +14,7 @@ const targetFile = "public/";
 const tscCompilerSettings = {
 	"target": 'es2020',
 	"module": "es2020",
+	"importsNotUsedAsValues": "error",
 	"moduleResolution": "node"
 };
 const htmlMinifierSettings = {

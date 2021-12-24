@@ -6,6 +6,7 @@ interface IAddress {
 	countrySub3?: String,
 	countrySub4?: String,
 	street?: string,
+	streetNumber?: string,
 	PC?: string
 }
 

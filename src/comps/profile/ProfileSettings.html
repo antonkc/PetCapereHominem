@@ -7,18 +7,38 @@
 	}
 	.profileSettings .line {
 		display: flex;
+		padding: 0.2rem 0;
 		border-bottom: 1px solid grey;
-		margin: 0 0 0.8rem;
+		margin: 0 0 0.4rem;
+		flex-wrap: wrap;
 		white-space: nowrap;
 	}
 	.profileSettings label{
-		flex: 0 1 6rem;
+		flex: 1 1 8rem;
 	}
 	.profileSettings .value{
-		flex: 1 1 8rem;
+		flex: 1 1 14rem;
 		font-weight: 600;
 	}
 
+	.profileSettings .profileSettingsMessage {
+		display: block;
+		margin-bottom: 0.4rem;
+		font-weight: 600;
+	}
+	.profileSettings .profileSettingsMessage::before {
+		content: '*';
+		padding: 0 0.4rem 0 0;
+		font-weight: bolder;
+	}
+	.profileSettings .profileSettingsMessage.error::before {
+		content: '\1F6D1';
+		color: red;
+	}
+
+	.profileSettings .alternateLoginsHeader {
+		margin-bottom: 0.8rem;
+	}
 	.profileSettings .otherLoginForms {
 		display: flex;
 		flex-wrap: wrap;
@@ -47,25 +67,25 @@
 			<div id="pass2Line" class="line" style="display: none;"><label for="password2"></label><input type="password" class="value" id="password2"/></div>
 		</div>
 		<div class="controls uSpace"><button id="logIn"></button><button id="register"></button></div>
+		<div id="profileSettingsOutput"></div>
+		<div class="alternateLoginsHeader"><span id="alternateLoginsText"></span></div>
 		<div class="otherLoginForms">
-			<span id="alternateLoginsCaption"></span>
 			<div class="alternateLogins" title="Google">
 				<div id="logWithGoogle" class="loginBlock"><img src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="" /></div>
 			</div>
 		</div>
 	</form>
-	<div id="profileSettingsOutput"></div>
 </div></template>
 <template id="Logged"><div class="profileSettings">
-	<div><h3 class="loggedText"></h3></div>
-	<div class="authInfo">
+	<div><h3 class="loggedText uSpace"></h3></div>
+	<div class="authInfo uSpace">
 		<div class="line"><label for="name"></label><bdi class="value" id="name"></bdi></div>
 		<div class="line"><label for="email"></label><span class="value" id="email"></span></div>
 	</div>
-	<div class="dbInfo public">
+	<div class="dbInfo public uSpace">
 
 	</div>
-	<div class="dbInfo private">
+	<div class="dbInfo private uSpace">
 
 	</div>
 	<button id="logOut"></button>

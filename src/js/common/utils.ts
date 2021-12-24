@@ -6,20 +6,20 @@
  */
 function employTemplate<T extends HTMLElement>(template: HTMLTemplateElement, root: T, addToExisting?: boolean): HTMLElement{
 	if(!addToExisting) root.innerHTML = "";
-	const clone = template.content.cloneNode(true);
+	let clone = template.content.firstElementChild.cloneNode(true) as HTMLElement;
 	root.appendChild(clone);
 
-	return clone as HTMLElement;
+	return clone;
 }
 
 const placeHolderMatch = /\{\{([0-9]+)\}\}/g;
 function fillPlaceholders(s : string, ...values : Array<string>) : string{
 	return s.replace(placeHolderMatch, (match, $1) => {
 		let index : number = Number.parseInt($1);
-		if(isNaN(index) || index < 1 || values[index] === undefined){
+		if(isNaN(index) || index < 1 || values[index-1] === undefined){
 			return match;
 		}
-		return values[index];
+		return values[index-1];
 	});
 }
 

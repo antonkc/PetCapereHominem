@@ -40,8 +40,7 @@
      inkscape:current-layer="layer1" />
   <defs
      id="defs2">
-    <symbol
-       id="userIcon">
+    <symbol viewBox="0 0 50 50" id="userIcon">
       <rect
          style="fill:#ffffff;stroke-width:0.294305"
          id="rect16068"

@@ -1,0 +1,34 @@
+rules_version = '2';
+service cloud.firestore {
+		// allow
+		// read
+		// get, list
+		// write
+		// create, update, delete
+	match /databases/{db}/documents {
+		match /profiles/{profileId} {
+		}
+		match /privateProfiles/{ppi} {
+		}
+		match /sysProfiles/{spi} {
+		}
+		match /posts/{postId} {
+		}
+		match /reports/{reportId} {
+		}
+		match /animals/{animalId} {
+		}
+	}
+
+	function isSigned(){
+		return request.auth != null
+	}
+
+	function postData(){
+		return request.resource.data
+	}
+
+	function dbData(){
+		return resource.data
+	}
+}

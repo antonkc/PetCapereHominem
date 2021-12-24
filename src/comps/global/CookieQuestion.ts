@@ -1,12 +1,13 @@
-import type DataCenter from "../js/DataCenter.js";
-import type PetCap from "../js/PetCap.js";
-import BaseComponent, { componentUpdateArgs } from "./BaseComponent.js";
+import type DataCenter from "../../js/DataCenter.js";
+import type PetCap from "../../js/PetCap.js";
+import BaseComponent, { componentUpdateArgs } from "../BaseComponent.js";
+import g from "../../js/common/Consts.js";
 
 
 // This is an example component
 type CookieQuestionArgs = {}
 class CookieQuestion extends BaseComponent<CookieQuestionArgs>{
-	static _componentName = "CookieQuestion"
+	static componentName = "CookieQuestion"
 
 	rootTemplate: HTMLTemplateElement;
 	switchTemplate: HTMLTemplateElement;
@@ -18,7 +19,7 @@ class CookieQuestion extends BaseComponent<CookieQuestionArgs>{
 		{ id: "adverisement", readonly: false}
 	];
 
-	async _build() {
+	async build() {
 		let petCap = (this.dataCenter.shared.petCap as PetCap);
 
 		this.root.innerHTML = "";
@@ -57,7 +58,7 @@ class CookieQuestion extends BaseComponent<CookieQuestionArgs>{
 						(petCap.userPrefs.allowedUsage as any)[elem.id.replace("input","")] = elem.checked;
 					});
 	
-					petCap.dataCenter.emmit("cookiePrefs",true);
+					petCap.dataCenter.emmit(g.cookieEventName,true);
 					ev.preventDefault();
 				});
 	
@@ -68,7 +69,7 @@ class CookieQuestion extends BaseComponent<CookieQuestionArgs>{
 					petCap.userPrefs.allowedUsage.analytics= true;
 					petCap.userPrefs.allowedUsage.functional= true;
 					petCap.userPrefs.allowedUsage.preferences= true;
-					petCap.dataCenter.emmit("cookiePrefs",true);
+					petCap.dataCenter.emmit(g.cookieEventName,true);
 					ev.preventDefault();
 				});
 	
@@ -88,12 +89,12 @@ class CookieQuestion extends BaseComponent<CookieQuestionArgs>{
 		this.templatesArea = templatesArea;
 		this.rootTemplate = this.templatesArea.querySelector("#CookieQuestion");
 		this.switchTemplate = this.templatesArea.querySelector("#CookieSelector");
-		this._build();
+		this.build();
 	}
 	
 	async update(params: componentUpdateArgs<CookieQuestionArgs>) {
 		if(params.type = "reload"){
-			this._build();
+			this.build();
 		}
 		return this;
 	}

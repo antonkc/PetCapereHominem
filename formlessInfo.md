@@ -1,5 +1,8 @@
 # Workflow de compilación
-
+## Comandos
+gulp buildDev
+gulp build
+firebase emulators:start | probar en local los cambios
 # Workflow de implementación
 
 # BBDD
@@ -50,6 +53,7 @@
 	- imgs (enlaces a las imágenes del animal)
 	- status (wantsOwner|adopted|lost|feral|deceased)
 ## Firebase realtime database
+Visit https://firebase.google.com/docs/database/security to learn more about security rules.
 ### Chats
 	- id $ (Es posible que sea rentable plantear un sitema de Id para )
 	- modDate $

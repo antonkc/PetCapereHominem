@@ -23,7 +23,7 @@
 	"loginWith": "También pueden iniciar sesión con:",
 	"register": "Registrarte",
 	"password": "Contraseña",
-	"password2": "Repetir contraseña",
+	"password2": "Repetir Contraseña",
 	"login": "Iniciar sesión",
 	"logout": "Cerrar sesión",
 	"name": "Nombre de usuario",
@@ -32,5 +32,5 @@
 	"err_passShort": "La contraseña es demasiado corta (mínimo 9 carácteres)",
 	"err_passTooSimple": "La contraseña es demasiado simple (debe contener números, mayúsculas y minúsculas)",
 	"err_passNotSame": "Las contraseñas no coinciden",
-	"err_someErr": "Error: {{1}} ({{2}})"
+	"err_someErr": "Error: {{1}}"
 }
