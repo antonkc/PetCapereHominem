@@ -79,8 +79,7 @@ const petCap = new PetCap();
 			const link = elems[i] as HTMLElement;
 			const key = "nav_" + link.getAttribute("data-target");
 			if( res[key]){
-				link.setAttribute("alt", res[key]);
-				link.innerText = (res[key]);
+				link.setAttribute("title", res[key]);
 			}
 		}
 	}).catch((err) => {

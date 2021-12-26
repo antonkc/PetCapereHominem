@@ -1,7 +1,7 @@
 import type DataCenter from "../../js/DataCenter.js";
 import type { componentUpdateArgs } from "../BaseComponent.js";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js";
-import { employTemplate, fillPlaceholders } from "../../js/common/utils.js";
+import { employTemplate, fillPlaceholders, getLoader, populateWithIdSelector } from "../../js/common/utils.js";
 import BaseFireAuthComponent from "../BaseFireAuthComponent.js";
 
 type valitationResult = {
@@ -13,153 +13,47 @@ enum MsgType {
 	warning,
 	error
 }
-
 type IProfileSettingsMessage = {
 	baseCode: string,
 	msgType: MsgType,
 	placeHolderFillers: Array<string>
 }
 
-// This is an example component
-type ProfileSettingsArgs = { }
+const templateNames = ["notLogged","loginForm","registerForm","logged","authDataDisplay","authDataForm","dbPublicDisplay","dbPublicForm","dbPrivateDisplay","dbPrivateForm","profileSettingsMessage"] as const;
+type ProfileSettingsTemplates = typeof templateNames[number];
+
+type ProfileSettingsArgs = { };
 class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 	protected isRegisterForm: Boolean = false;
-
-	protected loggedTemplate: HTMLTemplateElement
-	protected notLoggedTemplate: HTMLTemplateElement
-	protected messageTemplate: HTMLTemplateElement
-
-	protected override async authUpdated() {
-		let res = await this.petCap.loadRes("common");
-		
-		if(this.isLogged){
-			employTemplate(this.loggedTemplate, this.root);
-			this.root.querySelector("#name").textContent = this.auth.currentUser.displayName;
-			this.root.querySelector("#email").textContent = this.auth.currentUser.email;
-			this.root.querySelector('label[for="email"]').textContent = res["email"];
-			this.root.querySelector('label[for="name"]').textContent = res["name"];
-			this.root.querySelector('.loggedText').textContent = fillPlaceholders(res["name"], this.auth.currentUser.displayName);
-
-			let logoutButton = this.root.querySelector("#logOut") as HTMLButtonElement;
-			logoutButton.textContent = res["logout"];
-			logoutButton.addEventListener("click", (ev) => {
-				ev.preventDefault();
-				this.auth.signOut();
-			});
-		}
-		else {
-			employTemplate(this.notLoggedTemplate, this.root);
-			this.root.querySelector(".notLoggedText").textContent = res["notLogged"];
-			this.root.querySelector("[for='email']").textContent = res["email"];
-			this.root.querySelector("[for='password']").textContent = res["password"];
-			this.root.querySelector("[for='password2']").textContent = res["password2"];
-			this.root.querySelector("#alternateLoginsText").textContent = res["loginWith"];
-			this.root.querySelector("#logWithGoogle>img").setAttribute("alt", res["logWGoogleImg"]);
-			
-
-			let registerButton = this.root.querySelector("#register") as HTMLButtonElement;
-			let loginButton = this.root.querySelector("#logIn") as HTMLButtonElement;
-			registerButton.textContent = res["register"];
-			registerButton.value = res["register"];
-			loginButton.textContent = res["login"];
-			loginButton.value = res["login"];
-
-			registerButton.addEventListener("click", async (ev) => {
-				ev.preventDefault();
-				this.clearMessages();
-				if(this.isRegisterForm){
-					let passCheck = this.isValidPassword();
-					if(passCheck.valid){
-						try {
-							await createUserWithEmailAndPassword(this.auth, this.getInformedEmail(), this.getInformedPass());
-						}
-						catch (err) {
-							console.error(err);
-							this.writeMessages(res, [{
-								baseCode: "err_someErr",
-								msgType: MsgType.error,
-								placeHolderFillers: [err.message]
-							}]);
-						}
-					}
-					else {
-						this.writeMessages(res, passCheck.codes.map((val) => {
-							return {
-								baseCode: val,
-								msgType: MsgType.error,
-								placeHolderFillers: null
-							}
-						}));
-					}
-				}
-				else {
-					this.showRegisterForm();
-				}
-			});
-			loginButton.addEventListener("click", async (ev) => {
-				ev.preventDefault();
-				this.clearMessages();
-				if(this.isRegisterForm){
-					this.showLoginForm();
-				}
-				else {
-					try {
-						await signInWithEmailAndPassword(this.auth, this.getInformedEmail(), this.getInformedPass());
-					}
-					catch (err) {
-						console.error(err);
-						this.writeMessages(res, [{
-							baseCode: "err_someErr",
-							msgType: MsgType.error,
-							placeHolderFillers: [err.message]
-						}]);
-					}
-				}
-			});
-
-			
-			let logWithGoogle = this.root.querySelector("#logWithGoogle") as HTMLElement;
-			logWithGoogle.addEventListener("click", async (ev) => {
-				this.clearMessages();
-				const provider = new GoogleAuthProvider();
-				try {
-					await signInWithPopup(this.auth, provider);
-				}
-				catch (err) {
-					console.error(err);
-					this.writeMessages(res, [{
-						baseCode: "err_someErr",
-						msgType: MsgType.error,
-						placeHolderFillers: [err.message]
-					}]);
-				}
-			});
-		}
-	}
+	protected _res: any;
+	protected templates : {[tempalteName in ProfileSettingsTemplates ]: HTMLTemplateElement};
+	protected keepLoginInfo: {email: string, password: string};
 
 	constructor(root: HTMLElement, params: ProfileSettingsArgs, templatesArea: HTMLElement, dataCenter: DataCenter) {
 		super(root, params, templatesArea, dataCenter);
-		this.loggedTemplate = this.templatesArea.querySelector("#Logged");
-		this.notLoggedTemplate = this.templatesArea.querySelector("#NotLogged");
-		this.messageTemplate = this.templatesArea.querySelector("#ProfileSettingsMessage");
+		this.petCap.loadRes("common").then((res) => {
+			this._res = res;
+			this.drawComponent();
+		}).catch((reason) => {
+			console.error(reason);
+			this._res = {};
+			this.drawComponent();
+		});
+		this.keepLoginInfo = {email: "", password: ""};
+		(this.templates as any) = {};
+		populateWithIdSelector(templateNames, this.templates, this.templatesArea);
 		this.authUpdated();
 	}
 
-	async update(params: componentUpdateArgs<ProfileSettingsArgs>){
+	public async update(params: componentUpdateArgs<ProfileSettingsArgs>){
 		if(params.type === "reload"){
-			this.authUpdated();
+			this.drawComponent();
 		}
 
 		return this;
 	}
-
-	protected showRegisterForm(): void{
-		(this.root.querySelector("#pass2Line") as HTMLElement).style.display = "";
-		this.isRegisterForm = true;
-	}
-	protected showLoginForm(): void{
-		(this.root.querySelector("#pass2Line") as HTMLElement).style.display = "none";
-		this.isRegisterForm = false;
+	protected override async authUpdated() {
+		this.drawComponent();
 	}
 
 	protected isValidPassword(): valitationResult {
@@ -201,14 +95,267 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 		return "";
 	}
 
-	protected writeMessages( resources: any, messages: Array<IProfileSettingsMessage>): void {
+	protected res(resourceName: string): string{
+		if(!this._res) return "";
+		return this._res[resourceName] ? (this._res[resourceName] as string) : "";
+	}
+
+	protected drawComponent(): void {
+		if(this._res && this.auth){
+			if(this.isLogged) this.drawLogged();
+			else this.drawNotLogged();
+		}
+		else {
+			this.root.innerHTML = "";
+			this.root.appendChild(getLoader(10));
+		}
+	}
+
+	protected drawLogged(): void {
+		employTemplate(this.templates.logged, this.root);
+		this.root.querySelector('.loggedText').textContent = fillPlaceholders(this.res("name"), this.auth.currentUser.displayName);
+
+		let logoutBtn = this.root.querySelector("#logOut") as HTMLButtonElement;
+		logoutBtn.textContent = this.res("logout");
+		logoutBtn.addEventListener("click", async (ev) => {
+			ev.preventDefault();
+			await this.auth.signOut();
+			this.authUpdated();
+		});
+
+		this.drawAuthDataDisplay();
+		this.drawPublicDataDisplay();
+		this.drawPrivateDataDisplay();
+	}
+	protected drawAuthDataDisplay(): void {
+		employTemplate(this.templates.authDataDisplay, this.root.querySelector(".authInfo"));
+		this.root.querySelector('[for="name"]').textContent = this.res("name");
+		this.root.querySelector('[for="email"]').textContent = this.res("email");
+
+		this.root.querySelector("#name").textContent = this.auth.currentUser.displayName;
+		this.root.querySelector("#email").textContent = this.auth.currentUser.email;
+
+		const editBtn = this.root.querySelector("#editAuth") as HTMLButtonElement;
+		editBtn.title = this.res("edit");
+		editBtn.addEventListener("click", (ev) => {
+			ev.preventDefault();
+			this.drawAuthDataForm();
+		});
+	}
+	protected drawAuthDataForm(): void {
+		const form = employTemplate<HTMLFormElement>(this.templates.authDataForm, this.root.querySelector(".authInfo"));
+		form.addEventListener("submit", (ev) => {
+			ev.preventDefault();
+			// TODO: change data as needed
+			this.drawAuthDataDisplay();
+		});
+
+		form.querySelector('[for="name"]').textContent = this.res("name");
+		form.querySelector('[for="email"]').textContent = this.res("email");
+		(form.querySelector("#name") as HTMLInputElement).value = this.auth.currentUser.displayName;
+		form.querySelector("#email").textContent = this.auth.currentUser.email;
+
+		const cancelBtn = form.querySelector("#cancel") as HTMLButtonElement;
+		cancelBtn.textContent = this.res("cancel");
+		cancelBtn.addEventListener("click", (ev) => {
+			ev.preventDefault();
+			this.drawAuthDataDisplay();
+		});
+
+		(form.querySelector('[type="submit"]') as HTMLInputElement).value = this.res("submit");
+	}
+	protected drawPublicDataDisplay(): void {
+		employTemplate(this.templates.dbPublicDisplay, this.root.querySelector(".dbInfoPublic"));
+
+		const editBtn = this.root.querySelector("#editPublic") as HTMLButtonElement;
+		editBtn.title = this.res("edit");
+		editBtn.addEventListener("click", (ev) => {
+			ev.preventDefault();
+			this.drawPublicDataForm();
+		});
+	}
+	protected drawPublicDataForm(): void {
+		const form = employTemplate<HTMLFormElement>(this.templates.dbPublicForm, this.root.querySelector(".dbInfoPublic"));
+		form.addEventListener("submit", (ev) => {
+			ev.preventDefault();
+			// TODO: change data as needed
+			this.drawPublicDataDisplay();
+		});
+
+		const cancelBtn = form.querySelector(".dbInfoPublic #cancel") as HTMLButtonElement;
+		cancelBtn.textContent = this.res("cancel");
+		cancelBtn.addEventListener("click", (ev) => {
+			ev.preventDefault();
+			this.drawPublicDataDisplay();
+		});
+
+		(form.querySelector('.dbInfoPublic [type="submit"]') as HTMLInputElement).value = this.res("submit");
+	}
+	protected drawPrivateDataDisplay(): void {
+		employTemplate(this.templates.dbPrivateDisplay, this.root.querySelector(".dbInfoPrivate"));
+
+		const editBtn = this.root.querySelector("#editPriv") as HTMLButtonElement;
+		editBtn.title = this.res("edit");
+		editBtn.addEventListener("click", (ev) => {
+			ev.preventDefault();
+			this.drawPrivateDataForm();
+		});
+	}
+	protected drawPrivateDataForm(): void {
+		const form = employTemplate<HTMLFormElement>(this.templates.dbPrivateForm, this.root.querySelector(".dbInfoPrivate"));
+		form.addEventListener("submit", (ev) => {
+			ev.preventDefault();
+			// TODO: change data as needed
+			this.drawPrivateDataDisplay();
+		});
+
+		const cancelBtn = form.querySelector("#cancel") as HTMLButtonElement;
+		cancelBtn.textContent = this.res("cancel");
+		cancelBtn.addEventListener("click", (ev) => {
+			ev.preventDefault();
+			this.drawPrivateDataDisplay();
+		});
+
+		(form.querySelector('[type="submit"]') as HTMLInputElement).value = this.res("submit");
+	}
+
+	protected drawNotLogged(): void {
+		employTemplate(this.templates.notLogged, this.root);
+		this.root.querySelector(".notLoggedText").textContent = this.res("notLogged");
+		this.root.querySelector("#alternateLoginsText").textContent = this.res("loginWith");
+		this.root.querySelector("#logWithGoogle>img").setAttribute("alt", this.res("logWGoogleImg"));
+
+		let logWithGoogle = this.root.querySelector("#logWithGoogle") as HTMLElement;
+		logWithGoogle.addEventListener("click", async (ev) => {
+			this.clearMessages();
+			const provider = new GoogleAuthProvider();
+			try {
+				const result = await signInWithPopup(this.auth, provider);
+				this.authUpdated();
+			}
+			catch (err) {
+				console.error(err);
+				this.drawMessages(this._res, [{
+					baseCode: "err_someErr",
+					msgType: MsgType.error,
+					placeHolderFillers: [err.message]
+				}]);
+			}
+		});
+
+		this.drawLoginForm();
+	}
+	protected drawLoginForm(): void {
+		const form = employTemplate<HTMLFormElement>(this.templates.loginForm, this.root.querySelector("#formContainer"));
+		form.addEventListener("submit", async (ev) => {
+			ev.preventDefault();
+			this.clearMessages();
+			try {
+				await signInWithEmailAndPassword(this.auth, this.getInformedEmail(), this.getInformedPass());
+			}
+			catch (err) {
+				console.error(err);
+				this.drawMessages(this._res, [{
+					baseCode: "err_someErr",
+					msgType: MsgType.error,
+					placeHolderFillers: [err.message]
+				}]);
+			}
+		});
+
+		form.querySelector('[for="email"]').textContent = this.res("email");
+		form.querySelector('[for="password"]').textContent = this.res("password");
+
+		const emailInput = (form.querySelector('#email') as HTMLInputElement);
+		emailInput.value = this.keepLoginInfo["email"];
+		emailInput.placeholder = this.res("placeHolEmail");
+
+		const passInput = (form.querySelector('#password') as HTMLInputElement);
+		passInput.value = this.keepLoginInfo["password"];
+		passInput.placeholder = this.res("placeHolPass");
+		
+		let loginSubmit = form.querySelector("#login") as HTMLInputElement;
+		loginSubmit.value = this.res("login");
+
+		let registerBtn = form.querySelector("#register") as HTMLButtonElement;
+		registerBtn.textContent = this.res("register");
+		registerBtn.addEventListener("click",(ev) => {
+			ev.preventDefault();
+			this.keepLoginInfo["password"] = form["password"].value;
+			this.keepLoginInfo["email"] = form["email"].value;
+			this.clearMessages();
+			this.drawRegisterForm();
+		});
+	}
+	protected drawRegisterForm(): void {
+		const form = employTemplate<HTMLFormElement>(this.templates.registerForm, this.root.querySelector("#formContainer"));
+		form.addEventListener("submit", async (ev) => {
+			ev.preventDefault();
+			this.clearMessages();
+			let passCheck = this.isValidPassword();
+			if(passCheck.valid){
+				try {
+					await createUserWithEmailAndPassword(this.auth, this.getInformedEmail(), this.getInformedPass());
+				}
+				catch (err) {
+					console.error(err);
+					this.drawMessages(this._res, [{
+						baseCode: "err_someErr",
+						msgType: MsgType.error,
+						placeHolderFillers: [err.message]
+					}]);
+				}
+			}
+			else {
+				this.drawMessages(this._res, passCheck.codes.map((val) => {
+					return {
+						baseCode: val,
+						msgType: MsgType.error,
+						placeHolderFillers: null
+					}
+				}));
+			}
+		});
+
+		form.querySelector("[for='email']").textContent = this.res("email");
+		form.querySelector('[for="name"]').textContent = this.res("name");
+		form.querySelector("[for='password']").textContent = this.res("password");
+		form.querySelector("[for='password2']").textContent = this.res("password2");
+
+		const emailInput = (form.querySelector('#email') as HTMLInputElement);
+		emailInput.value = this.keepLoginInfo["email"];
+		emailInput.placeholder = this.res("placeHolEmail");
+
+		(form.querySelector('#name') as HTMLInputElement).placeholder = this.res("placeHolName");
+
+		const passInput = (form.querySelector('#password') as HTMLInputElement);
+		passInput.value = this.keepLoginInfo["password"];
+		passInput.placeholder = this.res("placeHolPass2");
+
+		(form.querySelector('#password2') as HTMLInputElement).placeholder = this.res("placeHolPass2");
+
+		let loginBtn = form.querySelector("#login") as HTMLButtonElement;
+		loginBtn.textContent = this.res("login");
+		loginBtn.addEventListener("click",(ev) => {
+			ev.preventDefault();
+			this.keepLoginInfo["password"] = form["password"].value;
+			this.keepLoginInfo["email"] = form["email"].value;
+			this.clearMessages();
+			this.drawLoginForm();
+		});
+
+		let registerSubmit = form.querySelector("#register") as HTMLInputElement;
+		registerSubmit.value = this.res("register");
+	}
+
+	protected drawMessages( resources: any, messages: Array<IProfileSettingsMessage>): void {
 		let outputDiv = this.root.querySelector("#profileSettingsOutput") as HTMLElement;
 
 		messages.forEach((msg) => {
 			let text = msg.placeHolderFillers ?
 				fillPlaceholders.bind(null, resources[msg.baseCode]).apply(null, msg.placeHolderFillers) :
 				resources[msg.baseCode];
-			let msgElem = employTemplate(this.messageTemplate, outputDiv, true);
+			let msgElem = employTemplate(this.templates.profileSettingsMessage, outputDiv, true);
 			msgElem.textContent = text;
 			switch (msg.msgType) {
 				case MsgType.error:

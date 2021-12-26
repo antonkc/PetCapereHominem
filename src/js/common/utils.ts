@@ -4,12 +4,55 @@
  * @param root 
  * @returns firstChild of isntantiated template
  */
-function employTemplate<T extends HTMLElement>(template: HTMLTemplateElement, root: T, addToExisting?: boolean): HTMLElement{
+function employTemplate<T extends HTMLElement>(template: HTMLTemplateElement, root: Element, addToExisting?: boolean): T{
 	if(!addToExisting) root.innerHTML = "";
-	let clone = template.content.firstElementChild.cloneNode(true) as HTMLElement;
+	let clone = template.content.firstElementChild.cloneNode(true) as T;
 	root.appendChild(clone);
 
 	return clone;
+}
+
+function getInnerValue(attrValRef: string | string[], data: any) {
+	let value;
+	if (Array.isArray(attrValRef)) {
+		let lastValue = data;
+		let isEndReached = false;
+		let i = 0;
+
+		do {
+			lastValue = lastValue[attrValRef[i]];
+
+			i++;
+			if (i >= attrValRef.length) {
+				isEndReached = true;
+			}
+		}
+		while (!isEndReached && lastValue !== undefined);
+
+		if (isEndReached) {
+			value = lastValue;
+		}
+		else {
+			console.warn(`Property not reached, last index:${i}`, attrValRef, data);
+		}
+	}
+	else if (typeof attrValRef === "string") {
+		value = data[attrValRef];
+	}
+	return value;
+}
+
+function populateWithIdSelector(ids: readonly string[], toPopulate: any, templatesArea?: HTMLElement | Document){
+	templatesArea = templatesArea ?? document;
+
+	ids.forEach((id) => {
+		toPopulate[id] = templatesArea.querySelector("#"+id);
+		if(toPopulate[id] === null){
+			console.warn(`Could not find "${id}"`, templatesArea);
+		}
+	})
+
+	return toPopulate;
 }
 
 const placeHolderMatch = /\{\{([0-9]+)\}\}/g;
@@ -23,4 +66,16 @@ function fillPlaceholders(s : string, ...values : Array<string>) : string{
 	});
 }
 
-export {employTemplate, fillPlaceholders};
+function getLoader(remHeight: Number = 4) : HTMLDivElement{
+	let elem = document.createElement("div");
+	elem.classList.add("loader");
+	elem.style.height = remHeight + "rem";
+	return elem;
+}
+function getInlineLoader() : HTMLSpanElement{
+	let elem = document.createElement("span");
+	elem.classList.add("loader");
+	return elem;
+}
+
+export {employTemplate, fillPlaceholders, getInnerValue, populateWithIdSelector, getLoader, getInlineLoader};

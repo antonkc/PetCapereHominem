@@ -40,7 +40,7 @@ const awaitValue: (subs: [IKeySubscribers, IKeyAwaiters], fn: (value: any) => vo
 }
 
 class DataCenter{
-	static singleton: DataCenter = null;
+	private static singleton: DataCenter = null;
 	constructor(){
 		if(DataCenter.singleton !== null){
 			return DataCenter.singleton;
@@ -51,9 +51,17 @@ class DataCenter{
 	shared: ISharedSpaceDefinition = {};
 
 	/**
-	 * Runs callback as soon as the value for the key is available, but not sooner than setTimeout(callback, 0)
+	 * Retrives the current value for a key, it may be undefined.
 	 */
-	get: (key: string, callback: (value: any) => void, isOneOff?: boolean) => DataCenter = (key, callback, isOneOff) => {
+	public retrieve(key: string): any {
+		let subs = getKeySubs(key);
+		return subs[0].value;
+	}
+
+	/**
+	 * Runs callback as soon as the value for the key is available, but not sooner than setTimeout(callback, 0). The callback may be called again if isOneOff is set to false or not set.
+	 */
+	public get(key: string, callback: (value: any) => void, isOneOff?: boolean): DataCenter {
 		let subs = getKeySubs(key);
 
 		if(subs[0].value !== undefined){
@@ -70,17 +78,23 @@ class DataCenter{
 	/**
 	 * Runs callback if there is an emmit for a related key
 	 */
-	subscribe: (key: string, callback: (value: any) => void, isOneOff?: boolean) => DataCenter = (key, callback, isOneOff) => {
-		let subs = getKeySubs(key);
-		if(isOneOff) awaitValue( subs, callback);
-		else subscribe( subs, callback);
+	public subscribe(key: string, callback: (value: any) => void, isOneOff?: boolean): DataCenter {
+		/**
+		 * This ensures that the suscribe function doesn't fire prematurelly. Since removing it
+		 * can result in the funcion being called by a previous emmit of the same frame.
+		*/
+		setTimeout(()=>{
+			let subs = getKeySubs(key);
+			if(isOneOff) awaitValue( subs, callback);
+			else subscribe( subs, callback);
+		}, 0);
 
 		return this;
 	}
 	/**
 	 * Runs all subscribers to key with value
 	 */
-	emmit: (key: string, value: any) => DataCenter = (key, value) => {
+	public emmit(key: string, value: any): DataCenter {
 		let subs = getKeySubs(key);
 		subs[0].value = value;
 
@@ -107,7 +121,7 @@ class DataCenter{
 	/**
 	 * Runs all subscribers to key with the return value of fn, can be aborted setting flag 0 to true
 	 */
-	advancedEmmit: (key: string, fn: (previousValue: any, eventContext: any, flags: IEmmitFlags) => any) => DataCenter = (key, fn) => {
+	public advancedEmmit(key: string, fn: (previousValue: any, eventContext: any, flags: IEmmitFlags) => any): DataCenter {
 		let subs = getKeySubs(key);
 		let flags: IEmmitFlags = [false];
 		let value = fn(subs[0].value, subs[0].eventContext, flags);

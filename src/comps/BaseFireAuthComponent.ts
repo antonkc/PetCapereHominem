@@ -49,16 +49,6 @@ class BaseFireAuthComponent<T> extends BaseComponent<T> {
 					
 					this.auth.useDeviceLanguage();
 					this.dataCenter.shared.auth = this.auth;
-					onAuthStateChanged(this.auth, (user) => {
-						if (user) {
-							this.isLogged = true
-							this.isAnonymous = user.isAnonymous;
-						} else {
-							this.isLogged = false;
-							this.isAnonymous = true;
-						}
-						this.authUpdated();
-					});
 				}
 
 				const user = this.auth.currentUser;
@@ -67,6 +57,17 @@ class BaseFireAuthComponent<T> extends BaseComponent<T> {
 					this.isAnonymous = user.isAnonymous;
 					this.authUpdated();
 				}
+				
+				onAuthStateChanged(this.auth, (user) => {
+					if (user) {
+						this.isLogged = true
+						this.isAnonymous = user.isAnonymous;
+					} else {
+						this.isLogged = false;
+						this.isAnonymous = true;
+					}
+					this.authUpdated();
+				});
 			}
 		}, true);
 	}

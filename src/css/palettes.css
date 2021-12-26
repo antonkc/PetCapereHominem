@@ -1,0 +1,52 @@
+html {
+	--greys-0: black;
+	--greys-1: hsl(0, 0%, 15%);
+	--greys-2: hsl(0, 0%, 40%);
+	--greys-3: hsl(0, 0%, 65%);
+	--greys-4: hsl(0, 0%, 85%);
+	--greys-5: white;
+
+	--text-color: black;
+	--bg-color: white;
+
+	--theme-MainColor-0: hsl(330, 58%, 15%);
+	--theme-MainColor-1: hsl(330, 58%, 35%);
+	--theme-MainColor-2: hsl(330, 58%, 70%);
+	--theme-MainColor-3: hsl(330, 58%, 95%);
+
+	--theme-Color1-0: hsl(24, 59%, 15%);
+	--theme-Color1-1: hsl(24, 59%, 35%);
+	--theme-Color1-2: hsl(24, 59%, 70%);
+	--theme-Color1-3: hsl(24, 59%, 85%);
+
+	color: var(--text-color);
+	background-color: var(--bg-color);
+}
+
+/*@media (prefers-color-scheme: dark) {
+	html {
+		--greys-5: black;
+		--greys-4: hsl(0, 0%, 15%);
+		--greys-3: hsl(0, 0%, 40%);
+		--greys-2: hsl(0, 0%, 60%);
+		--greys-1: hsl(0, 0%, 80%);
+		--greys-0: white;
+	
+		--text-color: hsl(24, 59%, 85%);
+		--bg-color: hsl(330, 58%, 3%);
+	
+		--theme-MainColor-3: hsl(330, 58%, 15%);
+		--theme-MainColor-2: hsl(330, 58%, 35%);
+		--theme-MainColor-1: hsl(330, 58%, 70%);
+		--theme-MainColor-0: hsl(330, 58%, 95%);
+	
+		--theme-Color1-3: hsl(24, 59%, 15%);
+		--theme-Color1-2: hsl(24, 59%, 35%);
+		--theme-Color1-1: hsl(24, 59%, 70%);
+		--theme-Color1-0: hsl(24, 59%, 85%);
+	}
+}*/
+
+.loader {
+	background-color: var(--greys-4);
+}

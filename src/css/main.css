@@ -1,3 +1,7 @@
+.firebase-emulator-warning {
+	display: none;
+}
+
 * {
 	box-sizing: border-box;
 	margin: 0;
@@ -12,7 +16,6 @@ body {
 	display: grid;
 	height: 100vh;
 	width: 100vw;
-	padding: 0.25rem 0;
 
 	grid-template-columns: 1fr;
 	grid-template-rows: 4rem 1fr 4rem;
@@ -36,14 +39,16 @@ img {
 	max-width: 100%;
 }
 
-button {
+button,
+input[type="submit"] {
 	font-size: inherit;
 	padding: 0.5rem;
 }
 
 input {
-	border: 1px solid grey;
+	border: 1px solid var(--greys-2);
 	border-radius: 0.4rem;
+	padding: 0.1rem 0.4rem;
 }
 
 #innerHeader #banner h1 {
@@ -58,15 +63,14 @@ input {
 }
 
 header, main, footer {
-	margin: 0.25rem 0;
 	width: 100%;
-	padding: 0 0.5rem;
+	padding: 0.25rem 0.5rem;
 	display: flex;
 	justify-content: center;
 }
 
 header, footer {
-	background-color: #f2f2f2;
+	background-color: var(--greys-4);
 }
 
 .inner {
@@ -77,12 +81,13 @@ header, footer {
 
 header {
 	grid-area: header;
+	margin-bottom: 0.25rem;
 	overflow-y: auto;
 }
 
 @media (min-width: 50rem){
 	header{
-		background-image: url("/assets/icons/icon-512x512.png") #f2f2f2;
+		background-image: url("/assets/icons/icon-512x512.png");
 		background-repeat: no-repeat;
 		background-size: 6rem 100%;
 	}
@@ -131,6 +136,8 @@ nav {
 main {
 	grid-area: main;
 
+	margin: 0.25rem 0;
+	
 	overflow-y: auto;
 	overflow-x: hidden;
 }
@@ -141,6 +148,8 @@ main .inner {
 
 footer {
 	grid-area: footer;
+
+	margin-top: 0.25rem;
 }
 
 nav > *{
@@ -150,18 +159,27 @@ nav > *{
 
 a.jsLink {
 	border-radius: 0.5rem;
-	border: 1px solid #0000004f;
-	background-color: #0000004f;
+	border: 1px solid var(--greys-1);
 	line-height: 3.5;
 	text-align: center;
 	vertical-align: middle;
 	word-wrap: break-word;
 	overflow: hidden;
 }
-
 a.jsLink * {
 	pointer-events: none;
 }
+a.jsLink svg {
+	width: 100%;
+	height: 100%;
+}
+a.jsLink:hover {
+	background-color: var(--greys-3);
+}
+a.jsLink:active {
+	background-color: var(--greys-2);
+}
+
 
 #hoverPanel {
 	display: flex;
@@ -182,15 +200,18 @@ a.jsLink * {
 	position: relative;
 	padding: 0;
 }
-
 .ratio {
 	width: 100%;
 }
-
 .ratioSlave {
 	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
+}
+
+.loader {
+	border-radius: 1rem;
+	padding: 0.5rem;
 }

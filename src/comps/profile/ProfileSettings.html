@@ -49,46 +49,74 @@
 		max-width: 5rem;
 		padding: 0.5rem;
 		border-radius: 1rem;
-		background-color: lightgrey;
+		background-color: var(--greys-4);
 	}
 
-	.profileSettings .controls {
+	.profileSettings .controlsRow {
 		display: flex;
 		justify-content: flex-end;
 		gap: 0.5rem;
 	}
 </style>
-<template id="NotLogged"><div class="profileSettings">
+<template id="notLogged"><div class="profileSettings">
 	<div class="uSpace"><h3 class="notLoggedText"></h3></div>
-	<form class="uSpace">
-		<div class="formContent uSpace">
-			<div class="line"><label for="email"></label><input type="text" class="value" id="email"/></div>
-			<div class="line"><label for="password"></label><input type="password" class="value" id="password"/></div>
-			<div id="pass2Line" class="line" style="display: none;"><label for="password2"></label><input type="password" class="value" id="password2"/></div>
-		</div>
-		<div class="controls uSpace"><button id="logIn"></button><button id="register"></button></div>
-		<div id="profileSettingsOutput"></div>
+	<div id="formContainer" class="uSpace"></div>
+	<div id="profileSettingsOutput"></div>
+	<div class="alternateLogins">
 		<div class="alternateLoginsHeader"><span id="alternateLoginsText"></span></div>
-		<div class="otherLoginForms">
-			<div class="alternateLogins" title="Google">
+		<div class="alternateLoginsBody" class="otherLoginForms">
+			<div title="Google">
 				<div id="logWithGoogle" class="loginBlock"><img src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA" alt="" /></div>
 			</div>
 		</div>
-	</form>
+	</div>
 </div></template>
-<template id="Logged"><div class="profileSettings">
+<template id="loginForm"><form class="loginForm">
+	<div class="line"><label for="email"></label><input type="text" autocomplete="email" class="value" id="email" name="email"/></div>
+	<div class="line"><label for="password"></label><input type="password" autocomplete="current-password" class="value" id="password" name="password"/></div>
+	<div class="controlsRow uSpace"><input id="login" type="submit"/><button id="register"></button></div>
+</form></template>
+<template id="registerForm"><form class="registerForm">
+	<div class="line"><label for="email"></label><input type="text" autocomplete="email" class="value" id="email" name="email"/></div>
+	<div class="line"><label for="name"></label><input type="text" autocomplete="nickname" class="value" id="name" name="name"/></div>
+	<div class="line"><label for="password"></label><input type="password" autocomplete="new-password" class="value" id="password" name="password"/></div>
+	<div class="line"><label for="password2"></label><input type="password" autocomplete="new-password" class="value" id="password2" name="password2"/></div>
+	<div class="controlsRow uSpace"><button id="login"></button><input id="register" type="submit"/></div>
+</form></template>
+
+<template id="logged"><div class="profileSettings">
 	<div><h3 class="loggedText uSpace"></h3></div>
-	<div class="authInfo uSpace">
-		<div class="line"><label for="name"></label><bdi class="value" id="name"></bdi></div>
-		<div class="line"><label for="email"></label><span class="value" id="email"></span></div>
-	</div>
-	<div class="dbInfo public uSpace">
-
-	</div>
-	<div class="dbInfo private uSpace">
-
-	</div>
-	<button id="logOut"></button>
+	<div class="authInfo uSpace"></div>
+	<div class="dbInfoPublic uSpace"></div>
+	<div class="dbInfoPrivate uSpace"></div>
+	<div class="controlsRow"><button id="logOut"></button></div>
 	<div id="profileSettingsOutput"></div>
 </div></template>
-<template id="ProfileSettingsMessage"><output class="profileSettingsMessage"></output></template>
+<template id="authDataDisplay"><div class="authDataDisplay">
+	<div class="line"><label for="name"></label><bdi class="value" id="name"></bdi></div>
+	<div class="line"><label for="email"></label><span class="value" id="email"></span></div>
+	<div class="floatingControls"><button id="editAuth" class="iconControl"></button></div>
+</div></template>
+<template id="authDataForm"><form class="authDataForm">
+	<div class="line"><label for="name"></label><input type="text" class="value" id="name" name="name"></input></div>
+	<div class="line"><label for="email"></label><span class="value" id="email"></span></div>
+	<div class="controlsRow"><button id="cancel"></button><input type="submit"></div>
+</div></template>
+<template id="dbPublicDisplay"><div class="dbPublicDisplay">
+
+	<div class="floatingControls"><button id="editPublic" class="iconControl"></button></div>
+</div></template>
+<template id="dbPublicForm"><form class="dbPublicForm">
+	
+	<div class="controlsRow"><button id="cancel"></button><input type="submit"></div>
+</div></template>
+<template id="dbPrivateDisplay"><div class="dbPrivateDisplay">
+	
+	<div class="floatingControls"><button id="editPriv" class="iconControl"></button></div>
+</div></template>
+<template id="dbPrivateForm"><form class="dbPrivateForm">
+	
+	<div class="controlsRow"><button id="cancel"></button><input type="submit"></div>
+</div></template>
+
+<template id="profileSettingsMessage"><output class="profileSettingsMessage"></output></template>

@@ -1,8 +1,6 @@
 # Workflow de compilación
 ## Comandos
-gulp buildDev
-gulp build
-firebase emulators:start | probar en local los cambios
+Ejecuta "npm run" para ver qué puedes hacer
 # Workflow de implementación
 
 # BBDD
