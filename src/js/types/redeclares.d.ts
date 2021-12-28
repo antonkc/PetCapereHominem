@@ -14,3 +14,7 @@ declare module 'https://www.gstatic.com/firebasejs/9.1.1/firebase-analytics.js' 
 declare module 'https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js' {
 	export * from 'firebase/auth'
 }
+
+declare module "https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js" {
+	export * from "firebase/firestore"
+}

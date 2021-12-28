@@ -1,6 +1,6 @@
 interface ISystemProfile {
-	id: string;
-	reportCount: Number;
+	id: string,
+	reportCount: Number,
 }
 
 export default ISystemProfile

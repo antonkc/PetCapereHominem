@@ -33,14 +33,18 @@
 	.settingsIcon .hoverControl:active {
 		opacity: 60%;
 	}
+	.settingsIcon .edit {
+		--text-color: var(--greys-5);
+		background-color: var(--greys-0);
+	}
 </style>
 <template id="SettingsIcon"><div class="settingsIcon">
 	<div class="ratioParent">
 		<img aria-hidden="true" class="ratio" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="/>
 		<div class="ratioSlave settIconControl">
 			<div id="avatarContainer"></div>
-			<div class="ratioSlave hoverControl">
-				<svg><use xlink:href="./assets/icons/symbolCollection.svg#pencilEdit"></use></svg>
+			<div class="ratioSlave hoverControl edit">
+				<svg><use xlink:href="./assets/icons/symbolCollection.svg#editIcon"></use></svg>
 			</div>
 		</div>
 	</div>

@@ -1,12 +1,12 @@
 import type { ILightPost } from "./IPost";
 
 interface IReport {
-	id: String;
-	emmiter: String;
-	reportedUser: String;
-	reason: String;
-	message: any;
-	post: ILightPost;
+	id: string,
+	emmiter: string,
+	reportedUser: string,
+	reason: string,
+	message: string,
+	post: ILightPost,
 }
 
 export default IReport

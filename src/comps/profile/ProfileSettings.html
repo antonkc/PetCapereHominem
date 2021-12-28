@@ -1,7 +1,4 @@
 <style>
-	.profileSettings {
-		padding: 1rem;
-	}
 	.profileSettings .uSpace {
 		padding-bottom: 1rem;
 	}
@@ -19,6 +16,15 @@
 	.profileSettings .value{
 		flex: 1 1 14rem;
 		font-weight: 600;
+	}
+	.profileSettings .value.small{
+		flex: 1 1 6rem;
+		text-align: right;
+	}
+	.profileSettings .valueBlock {
+		display: inline-block;
+		width: 100%;
+		resize: vertical;
 	}
 
 	.profileSettings .profileSettingsMessage {
@@ -51,15 +57,12 @@
 		border-radius: 1rem;
 		background-color: var(--greys-4);
 	}
-
-	.profileSettings .controlsRow {
-		display: flex;
-		justify-content: flex-end;
-		gap: 0.5rem;
-	}
 </style>
 <template id="notLogged"><div class="profileSettings">
-	<div class="uSpace"><h3 class="notLoggedText"></h3></div>
+	<div class="uSpace">
+		<h2 id="compTitle"></h2>
+		<p class="notLoggedText"></p>
+	</div>
 	<div id="formContainer" class="uSpace"></div>
 	<div id="profileSettingsOutput"></div>
 	<div class="alternateLogins">
@@ -74,48 +77,69 @@
 <template id="loginForm"><form class="loginForm">
 	<div class="line"><label for="email"></label><input type="text" autocomplete="email" class="value" id="email" name="email"/></div>
 	<div class="line"><label for="password"></label><input type="password" autocomplete="current-password" class="value" id="password" name="password"/></div>
-	<div class="controlsRow uSpace"><input id="login" type="submit"/><button id="register"></button></div>
+	<div class="controlsRow"><input id="login" type="submit"/><button id="register"></button></div>
 </form></template>
 <template id="registerForm"><form class="registerForm">
 	<div class="line"><label for="email"></label><input type="text" autocomplete="email" class="value" id="email" name="email"/></div>
 	<div class="line"><label for="name"></label><input type="text" autocomplete="nickname" class="value" id="name" name="name"/></div>
 	<div class="line"><label for="password"></label><input type="password" autocomplete="new-password" class="value" id="password" name="password"/></div>
 	<div class="line"><label for="password2"></label><input type="password" autocomplete="new-password" class="value" id="password2" name="password2"/></div>
-	<div class="controlsRow uSpace"><button id="login"></button><input id="register" type="submit"/></div>
+	<div class="controlsRow"><button id="login"></button><input id="register" type="submit"/></div>
 </form></template>
 
 <template id="logged"><div class="profileSettings">
-	<div><h3 class="loggedText uSpace"></h3></div>
+	<div class="uSpace">
+		<h2 id="compTitle"></h2>
+		<p class="loggedText"></p>
+	</div>
 	<div class="authInfo uSpace"></div>
 	<div class="dbInfoPublic uSpace"></div>
 	<div class="dbInfoPrivate uSpace"></div>
 	<div class="controlsRow"><button id="logOut"></button></div>
 	<div id="profileSettingsOutput"></div>
 </div></template>
-<template id="authDataDisplay"><div class="authDataDisplay">
+<template id="authDataDisplay"><div class="authDataDisplay display">
+	<h3 id="authDataDisplayTitle"></h3>
 	<div class="line"><label for="name"></label><bdi class="value" id="name"></bdi></div>
 	<div class="line"><label for="email"></label><span class="value" id="email"></span></div>
-	<div class="floatingControls"><button id="editAuth" class="iconControl"></button></div>
+	<div class="floatingControls"><button id="editAuth" class="iconControl"><svg><use xlink:href="./assets/icons/symbolCollection.svg#editIcon"></use></svg></button></div>
 </div></template>
 <template id="authDataForm"><form class="authDataForm">
-	<div class="line"><label for="name"></label><input type="text" class="value" id="name" name="name"></input></div>
+	<h3 id="authDataFormTitle"></h3>
+	<div class="line"><label for="name"></label><input type="text" autocomplete="nickname" class="value" id="name" name="name"></input></div>
 	<div class="line"><label for="email"></label><span class="value" id="email"></span></div>
 	<div class="controlsRow"><button id="cancel"></button><input type="submit"></div>
 </div></template>
-<template id="dbPublicDisplay"><div class="dbPublicDisplay">
-
-	<div class="floatingControls"><button id="editPublic" class="iconControl"></button></div>
+<template id="dbPublicDisplay"><div class="dbPublicDisplay display">
+	<h3 id="dbPublicDisplayTitle"></h3>
+	<div class="line"><label for="pbmail"></label><span class="value" id="pbmail"></span></div>
+	<div class="line"><label for="pbPhone"></label><span class="value" id="pbPhone"></span></div>
+	<div class="line"><label for="bio"></label><p class="valueBlock" id="bio"></p></div>
+	<div class="line"><label for="pbaddr"></label><span id="pbaddr" class="value"></span></div>
+	<div class="line"><label for="upDate"></label><span id="upDate" class="value small"></span></div>
+	<div class="line"><label for="modDate"></label><span id="modDate"></span></div>
+	<div class="floatingControls"><button id="editPublic" class="iconControl"><svg><use xlink:href="./assets/icons/symbolCollection.svg#editIcon"></use></svg></button></div>
 </div></template>
 <template id="dbPublicForm"><form class="dbPublicForm">
-	
+	<h3 id="dbPublicFormTitle"></h3>
+	<div class="line"><label for="pbmail"></label><input autocomplete="email" type="text" class="value" id="pbmail" name="pbmail"></input></div>
+	<div class="line"><label for="pbPhone"></label><input autocomplete="tel" type="tel" class="value" id="pbPhone" name="pbPhone"></input></div>
+	<div class="line"><label for="bio"></label><textarea class="valueBlock" id="bio" name="bio"></textarea></div>
+	<div class="line"><label for="pbaddr"></label><span id="pbaddr" class="value"></span></div>
+	<div class="line"><label for="upDate"></label><span id="upDate" class="value small"></span></div>
+	<div class="line"><label for="modDate"></label><span id="modDate" class="value small"></span></div>
 	<div class="controlsRow"><button id="cancel"></button><input type="submit"></div>
 </div></template>
-<template id="dbPrivateDisplay"><div class="dbPrivateDisplay">
-	
-	<div class="floatingControls"><button id="editPriv" class="iconControl"></button></div>
+<template id="dbPrivateDisplay"><div class="dbPrivateDisplay display">
+	<h3 id="dbPrivateDisplayTitle"></h3>
+	<div class="line"><label for="addr"></label><span id="addr" class="value"></span></div>
+	<div class="line"><label for="subs"></label><span id="subs" class="value"></span></div>
+	<div class="floatingControls"><button id="editPriv" class="iconControl"><svg><use xlink:href="./assets/icons/symbolCollection.svg#editIcon"></use></svg></button></div>
 </div></template>
 <template id="dbPrivateForm"><form class="dbPrivateForm">
-	
+	<h3 id="dbPrivateFormTitle"></h3>
+	<div class="line"><label for="addr"></label><span id="addr" class="value"></span></div>
+	<div class="line"><label for="subs"></label><p id="subs" class="valueBlock"></p></div>
 	<div class="controlsRow"><button id="cancel"></button><input type="submit"></div>
 </div></template>
 

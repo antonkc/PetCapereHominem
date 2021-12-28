@@ -1,10 +1,11 @@
 enum AnimalStatus {
-	wantsOwner = "wantsOwner",
-	adopted = "adopted",
-	lost = "lost",
-	feral = "feral",
-	deceased = "deceased",
-	onHold = "onHold"
+	WantsOwner = "wantsOwner",
+	Adopted = "adopted",
+	Lost = "lost",
+	Feral = "feral",
+	Deceased = "deceased",
+	OnHold = "onHold",
+	Unknown = "unknown"
 }
 
 export default AnimalStatus;

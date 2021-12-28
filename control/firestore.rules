@@ -7,28 +7,56 @@ service cloud.firestore {
 		// create, update, delete
 	match /databases/{db}/documents {
 		match /profiles/{profileId} {
+			get: true
+			list: false
+
+			create: if isSigned() && isUserId(profileId)
+			update: if isSigned() && isUserId(profileId)
+			delete: false
 		}
 		match /privateProfiles/{ppi} {
+			get: if isSigned() && isUserId(ppi)
+			list: false
+
+			create: if isVerified() && isUserId(ppi)
+			update: if isVerified() && isUserId(ppi)
+			delete: false
 		}
 		match /sysProfiles/{spi} {
+			read: false
+			write: false
 		}
 		match /posts/{postId} {
+			get: true
+			list: true
 		}
 		match /reports/{reportId} {
+			//get: if isVerified()
+			//list: if isVerified()
 		}
 		match /animals/{animalId} {
+			get: true
+			list: true
 		}
-	}
 
-	function isSigned(){
-		return request.auth != null
-	}
+		function isUserId(id){
+			return id == request.auth.uid
+		}
 
-	function postData(){
-		return request.resource.data
-	}
+		function isVerified(){
+			return request.auth != null && request.token.email_verified
+		}
 
-	function dbData(){
-		return resource.data
+		function isSigned(){
+			return request.auth != null
+		}
+
+		function postData(){
+			return request.resource.data
+		}
+
+		function dbData(){
+			return resource.data
+		}
 	}
 }

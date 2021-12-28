@@ -4,25 +4,25 @@ import type { ILightProfile } from "./IProfile";
 import type PostType from "./PostType";
 
 interface ILightPost {
-	id: string;
-	type: PostType;
-	modDate: Date;
-	title: String;
+	id: string,
+	type: PostType,
+	modDate: Date,
+	title: string,
 }
 
 interface IPost {
-	id: string;
-	author?: ILightProfile;
-	type?: PostType;
-	upDate?: Date;
-	modDate?: Date;
-	img?: String;
-	lang?: String;
-	title?: String;
-	leadIn?: String;
-	body?: String;
-	addr?: IAddress;
-	anis?: Array<ILightAnimal>;
+	id: string,
+	author?: ILightProfile,
+	type?: PostType,
+	upDate?: Date,
+	modDate?: Date,
+	img?: string,
+	lang?: string,
+	title?: string,
+	leadIn?: string,
+	body?: string,
+	addr?: IAddress,
+	anis?: Array<ILightAnimal>,
 }
 
 export default IPost

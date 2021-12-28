@@ -1,19 +1,19 @@
 import type AnimalStatus from "./AnimalStatus";
 
 interface ILightAnimal {
-	id: String;
-	name: String;
-	status: AnimalStatus;
+	id: string,
+	name: string,
+	status: AnimalStatus,
 }
 
 interface IAnimal {
-	id: String;
-	name: String;
-	duplicated: Boolean;
-	species: string;
-	subspecies: String;
-	imgs: Array<String>;
-	status: AnimalStatus;
+	id: string,
+	name: string,
+	duplicated: Boolean,
+	species: string,
+	subspecies: string,
+	imgs: Array<string>,
+	status: AnimalStatus,
 }
 
 export default IAnimal;

@@ -4,7 +4,7 @@ enum DbColletions {
 	SysProfiles = "sysProfiles",
 	Posts = "posts",
 	Reports = "reports",
-	Animals = "animals"
+	Animals = "animals",
 }
 
 export default DbColletions;

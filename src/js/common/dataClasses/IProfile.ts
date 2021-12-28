@@ -1,20 +1,24 @@
-import type { ILightPost } from "./IPost";
+import type IAddress from "./IAddress";
 
 interface ILightProfile {
 	id: string,
 	name: string,
 	photo: string,
-	cert: boolean;
+	cert: boolean,
 }
 
 interface IProfile {
-	id: string;
-	bio?: string;
-	pbMail?: string;
-	upDate?: Date;
-	modDate?: Date;
-	cert?: boolean;
-	subs?: Array<ILightPost>;
+	id: string,
+	name?: string,
+	bio?: string,
+	photo?: string,
+	pbMail?: string,
+	pbPhone?: string,
+	upDate?: Date,
+	modDate?: Date,
+	addr?: IAddress,
+	cert?: boolean,
+	certOrg?: boolean,
 }
 
 export default IProfile

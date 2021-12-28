@@ -1,13 +1,13 @@
 interface IAddress {
-	geoHash: String,
-	country?: String,
-	countrySub1?: String,
-	countrySub2?: String,
-	countrySub3?: String,
-	countrySub4?: String,
+	geoHash: string,
+	country?: string,
+	countrySub1?: string,
+	countrySub2?: string,
+	countrySub3?: string,
+	countrySub4?: string,
 	street?: string,
-	streetNumber?: string,
-	PC?: string
+	pc?: string,
+	od?: string,
 }
 
 export default IAddress
