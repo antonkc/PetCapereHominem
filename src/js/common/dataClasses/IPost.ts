@@ -11,7 +11,6 @@ interface ILightPost {
 }
 
 interface IPost {
-	id: string,
 	author?: ILightProfile,
 	type?: PostType,
 	upDate?: Date,

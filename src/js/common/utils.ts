@@ -1,3 +1,5 @@
+import type IAddress from "./dataClasses/IAddress";
+
 /**
  * 
  * @param template Has to match this format /<template id="[^"]+"><div class="[^"]+">.*<\\/div><\\/template>/ (only one element under template with no whitespace between template tags and child tags)
@@ -41,6 +43,35 @@ function getInnerValue(attrValRef: string | string[], data: any) {
 	}
 	return value;
 }
+function getAddrString(addr: IAddress): string {
+	let str = "";
+	if(addr){
+		str += addr.country ? addr.country + ", " : "-,";
+		str += addr.countrySub1 ? addr.countrySub1 + ", " : "";
+		str += addr.pc ? "("+ addr.pc+ ") " : "(-) ";
+	}
+	return str;
+}
+function padcutLeft(base: string | number, length: number, paddingChar: string): string {
+	return cutLeft(padLeft(base, length, paddingChar), length);
+}
+function padLeft(base: string | number, length: number, paddingChar: string): string {
+	base = base.toString();
+	if(base.length < length){
+		return (paddingChar)
+	}
+}
+function cutLeft(base: string | number, length: number): string {
+	base = base.toString();
+	if(base.length > length){
+		return base.substring(base.length - length)
+	}
+	return base;
+}
+function firebaseTimeToDate(fireTimeStamp: any): Date {
+	if(fireTimeStamp) return new Date(fireTimeStamp.seconds*1000);
+	return null;
+}
 
 function populateWithIdSelector(ids: readonly string[], toPopulate: any, templatesArea?: HTMLElement | Document){
 	templatesArea = templatesArea ?? document;
@@ -66,7 +97,7 @@ function fillPlaceholders(s : string, ...values : Array<string>) : string{
 	});
 }
 
-function getLoader(remHeight: Number = 4) : HTMLDivElement{
+function getLoader(remHeight: number = 4) : HTMLDivElement{
 	let elem = document.createElement("div");
 	elem.classList.add("loader");
 	elem.style.height = remHeight + "rem";
@@ -78,4 +109,4 @@ function getInlineLoader() : HTMLSpanElement{
 	return elem;
 }
 
-export {employTemplate, fillPlaceholders, getInnerValue, populateWithIdSelector, getLoader, getInlineLoader};
+export {employTemplate, fillPlaceholders, getInnerValue, populateWithIdSelector, getLoader, getInlineLoader, getAddrString, padcutLeft, padLeft, cutLeft, firebaseTimeToDate};

@@ -1,0 +1,12 @@
+{
+	"months": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+	"shortMonths": ["En", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ag", "Sep", "Oct", "Nov", "Dic"],
+	"currencies": {
+		"eur": ["€", "Euro", "Euros"],
+		"usd": ["$", "Dolar", "Dolares"]
+	},
+	"locales": {
+		"es-es": "Español/Castellano (España)",
+		"en-us": "Inglés (EEUU)"
+	}
+}

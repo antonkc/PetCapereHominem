@@ -1,42 +1,42 @@
 rules_version = '2';
 service cloud.firestore {
-		// allow
-		// read
-		// get, list
-		// write
-		// create, update, delete
+	// allow
+	// read
+	// get, list
+	// write
+	// create, update, delete
 	match /databases/{db}/documents {
 		match /profiles/{profileId} {
-			get: true
-			list: false
+			allow get: if true
+			allow list: if false
 
-			create: if isSigned() && isUserId(profileId)
-			update: if isSigned() && isUserId(profileId)
-			delete: false
+			allow create: if isSigned() && isUserId(profileId)
+			allow update: if isSigned() && isUserId(profileId)
+			allow delete: if false
 		}
 		match /privateProfiles/{ppi} {
-			get: if isSigned() && isUserId(ppi)
-			list: false
+			allow get: if isSigned() && isUserId(ppi)
+			allow list: if false
 
-			create: if isVerified() && isUserId(ppi)
-			update: if isVerified() && isUserId(ppi)
-			delete: false
+			allow create: if isVerified() && isUserId(ppi)
+			allow update: if isVerified() && isUserId(ppi)
+			allow delete: if false
 		}
 		match /sysProfiles/{spi} {
-			read: false
-			write: false
+			allow read: if false
+			allow write: if false
 		}
 		match /posts/{postId} {
-			get: true
-			list: true
+			allow get: if true
+			allow list: if true
 		}
 		match /reports/{reportId} {
-			//get: if isVerified()
-			//list: if isVerified()
+			allow get: if isVerified()
+			allow list: if isVerified()
 		}
 		match /animals/{animalId} {
-			get: true
-			list: true
+			allow get: if true
+			allow list: if true
 		}
 
 		function isUserId(id){
@@ -44,19 +44,11 @@ service cloud.firestore {
 		}
 
 		function isVerified(){
-			return request.auth != null && request.token.email_verified
+			return request.auth != null && request.auth.token.email_verified
 		}
 
 		function isSigned(){
 			return request.auth != null
-		}
-
-		function postData(){
-			return request.resource.data
-		}
-
-		function dbData(){
-			return resource.data
 		}
 	}
 }

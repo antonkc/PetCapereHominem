@@ -1,26 +1,16 @@
 import type DataCenter from "../../js/DataCenter.js";
 import type { componentUpdateArgs } from "../BaseComponent.js";
-import type { Firestore } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, updateProfile, updateEmail } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js";
-import { employTemplate, fillPlaceholders, getLoader, populateWithIdSelector } from "../../js/common/utils.js";
+import type { IValitationResult } from "../../js/types/IValidationResult.js";
+import type { IInfoPromt } from "../../js/types/InfoPromt.js";
+import type IProfile from "../../js/common/dataClasses/IProfile.js";
+import type IPrivateProfile from "../../js/common/dataClasses/IPrivateProfile.js";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, updateProfile, updateEmail } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-auth.js";
+import { employTemplate, fillPlaceholders, firebaseTimeToDate, getAddrString, getInnerValue, getLoader, populateWithIdSelector } from "../../js/common/utils.js";
+import { DocumentData, DocumentReference, Firestore, updateDoc, doc, getDoc, serverTimestamp, collection, setDoc } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js";
 import BaseFireAuthComponent from "../BaseFireAuthComponent.js";
-import { getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js";
-import getFireStoreDB from "../../js/common/db.js";
+import { InfoPromtType } from "../../js/types/InfoPromt.js";
+import DbColletions from "../../js/common/dataClasses/DbCollections.js";
 
-type IValitationResult = {
-	valid: Boolean,
-	codes: Array<string>
-};
-enum MsgType {
-	info,
-	warning,
-	error
-}
-type IProfileSettingsMessage = {
-	baseCode: string,
-	msgType: MsgType,
-	placeHolderFillers: Array<string>
-}
 type ILoginInformation = {
 	email: string,
 	password: string
@@ -42,6 +32,11 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 	protected keepLoginInfo: {email: string, password: string};
 	protected firestore: Firestore;
 
+	protected publicDocRef: DocumentReference<DocumentData>;
+	protected publicData: IProfile = {};
+	protected privDocRef: DocumentReference<DocumentData>;
+	protected privData: IPrivateProfile = {};
+
 	constructor(root: HTMLElement, params: ProfileSettingsArgs, templatesArea: HTMLElement, dataCenter: DataCenter) {
 		super(root, params, templatesArea, dataCenter);
 		this.petCap.loadRes("common").then((res) => {
@@ -53,6 +48,7 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 			this.drawComponent();
 		});
 		this.keepLoginInfo = {email: "", password: ""};
+		this.firestore = this.dataCenter.shared.firestore;
 		(this.templates as any) = {};
 		populateWithIdSelector(templateNames, this.templates, this.templatesArea);
 		this.authUpdated();
@@ -60,12 +56,18 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 	public async update(params: componentUpdateArgs<ProfileSettingsArgs>) {
 		if(params.type === "reload"){
 			this.drawComponent();
+			if(this.auth && this.auth.currentUser){
+				this.bindDbDocs();
+			}
 		}
 
 		return this;
 	}
 	protected override async authUpdated() {
 		this.drawComponent();
+		if(this.auth && this.auth.currentUser){
+			this.bindDbDocs();
+		}
 	}
 
 	protected async loginInAction(form: HTMLFormElement) {
@@ -74,6 +76,7 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 		let validation = this.validateLogIn(values);
 		await this.authSignFlow( async () => {
 			await signInWithEmailAndPassword(this.auth, values.email, values.password);
+
 		}, validation);
 	}
 	protected async registerAction(form: HTMLFormElement) {
@@ -86,11 +89,20 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 			await updateProfile(this.auth.currentUser, {
 				displayName: values.name
 			});
-
-			
 		}, validation);
 	}
 	protected async updateAuthAction(form: HTMLFormElement) {
+		this.clearMessages();
+		let values = this.getFormData<IRegisterInformation>(form);
+		let validation = this.validateAuthForm(values);
+		
+		await this.authSignFlow( async () => {
+			await updateProfile(this.auth.currentUser, {
+				displayName: values.name
+			});
+		}, validation);
+	}
+	protected async updatePublicAction(form: HTMLFormElement) {
 		this.clearMessages();
 		let values = this.getFormData<IRegisterInformation>(form);
 		let validation = this.validateAuthForm(values);
@@ -185,7 +197,7 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 			this.root.appendChild(getLoader(10));
 		}
 	}
-	protected drawMessages( resources: any, messages: Array<IProfileSettingsMessage>): void {
+	protected drawMessages( resources: any, messages: Array<IInfoPromt>): void {
 		let outputDiv = this.root.querySelector("#profileSettingsOutput") as HTMLElement;
 
 		messages.forEach((msg) => {
@@ -195,13 +207,13 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 			let msgElem = employTemplate(this.templates.profileSettingsMessage, outputDiv, true);
 			msgElem.textContent = text;
 			switch (msg.msgType) {
-				case MsgType.error:
+				case InfoPromtType.error:
 					msgElem.classList.add("error")
 					break;
-				case MsgType.info:
+				case InfoPromtType.info:
 					msgElem.classList.add("info")
 					break;
-				case MsgType.warning:
+				case InfoPromtType.warning:
 					msgElem.classList.add("warning")
 					break;
 			}
@@ -287,6 +299,8 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 			ev.preventDefault();
 			this.drawPublicDataForm();
 		});
+
+		this.drawPublicData(false);
 	}
 	protected drawPublicDataForm(): void {
 		const form = employTemplate<HTMLFormElement>(this.templates.dbPublicForm, this.root.querySelector(".dbInfoPublic"));
@@ -312,6 +326,27 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 		});
 
 		(form.querySelector('.dbInfoPublic [type="submit"]') as HTMLInputElement).value = this.res("submit");
+
+		this.drawPublicData(true);
+	}
+	protected drawPublicData(isform: boolean): void{
+		const elem = this.root.querySelector(".dbInfoPublic") as HTMLElement;
+		if(isform){
+			(elem.querySelector('#pbmail') as HTMLInputElement).value =this.publicData.pbMail ? this.publicData.pbMail : "";
+			(elem.querySelector('#pbPhone') as HTMLInputElement).value =this.publicData.pbPhone ? this.publicData.pbPhone : "";
+			(elem.querySelector('#bio') as HTMLInputElement).value =this.publicData.bio ? this.publicData.bio : "";
+		}
+		else {
+			elem.querySelector('#pbmail').textContent =this.publicData.pbMail ? this.publicData.pbMail : "";
+			elem.querySelector('#pbPhone').textContent =this.publicData.pbPhone ? this.publicData.pbPhone : "";
+			elem.querySelector('#bio').textContent =this.publicData.bio ? this.publicData.bio : "";
+		}
+		let addr = getAddrString(this.publicData.addr);
+		elem.querySelector('#pbaddr').textContent = addr !== "" ? addr : this.res("addr_notInformed");
+		elem.querySelector('#upDate').textContent = this.publicData.upDate ? this.petCap.getFormatedDate( this.publicData.upDate) : "";
+		(elem.querySelector('#upDate') as HTMLTimeElement).dateTime = this.publicData.upDate ? this.publicData.upDate.toUTCString() : "";
+		elem.querySelector('#modDate').textContent = this.publicData.modDate ? this.petCap.getFormatedDate(this.publicData.modDate) : "";
+		(elem.querySelector('#modDate') as HTMLTimeElement).dateTime = this.publicData.modDate ? this.publicData.modDate.toUTCString() : "";
 	}
 	protected drawPrivateDataDisplay(): void {
 		const display = employTemplate(this.templates.dbPrivateDisplay, this.root.querySelector(".dbInfoPrivate")) as HTMLElement;
@@ -326,6 +361,8 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 			ev.preventDefault();
 			this.drawPrivateDataForm();
 		});
+
+		this.drawPrivateData(false);
 	}
 	protected drawPrivateDataForm(): void {
 		const form = employTemplate<HTMLFormElement>(this.templates.dbPrivateForm, this.root.querySelector(".dbInfoPrivate"));
@@ -347,6 +384,15 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 		});
 
 		(form.querySelector('[type="submit"]') as HTMLInputElement).value = this.res("submit");
+		
+		this.drawPrivateData(true);
+	}
+	protected drawPrivateData(isform: boolean): void{
+		const elem = this.root.querySelector(".dbInfoPrivate");
+
+		let addr = getAddrString(this.privData.addr);
+		elem.querySelector('#addr').textContent = addr !== "" ? addr : this.res("addr_notInformed");
+		elem.querySelector('#subs').textContent = "";
 	}
 	//#endregion drawLogged
 	//#region drawNotLogged
@@ -436,20 +482,7 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 		registerSubmit.value = this.res("register");
 	}
 	//#endregion drawNotLogged
-	
-	protected getFirestore(): Firestore {
-		if(this.firestore) return this.firestore;
 
-		if(this.dataCenter.shared.firestore){
-			this.firestore = this.dataCenter.shared.firestore;
-		}
-		else {
-			this.firestore = getFireStoreDB(this.fireApp);
-			this.dataCenter.shared.firestore = this.firestore;
-		}
-
-		return this.firestore;
-	}
 	protected getFormData<T = any>(form: HTMLFormElement): T {
 		let result: any = {};
 		const relevantElems = form.elements;
@@ -472,7 +505,7 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 				console.error(err);
 				this.drawMessages(this._res, [{
 					baseCode: "err_someErr",
-					msgType: MsgType.error,
+					msgType: InfoPromtType.error,
 					placeHolderFillers: [err.message]
 				}]);
 			}
@@ -481,11 +514,60 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 			this.drawMessages(this._res, validation.codes.map((val) => {
 				return {
 					baseCode: val,
-					msgType: MsgType.error,
+					msgType: InfoPromtType.error,
 					placeHolderFillers: null
 				}
 			}));
 		}
+	}
+	protected async bindDbDocs(): Promise<void> {
+		this.publicDocRef = doc(this.firestore, DbColletions.Profiles, this.auth.currentUser.uid);
+		this.privDocRef = doc(this.firestore, DbColletions.PrivateProfiles, this.auth.currentUser.uid);
+
+		await this.syncDbDocs();
+	}
+	protected async syncDbDocs(): Promise<void> {
+		let pub = (async () => {
+			let pubDocSnap = await getDoc(this.publicDocRef);
+			let pubDocData = pubDocSnap.data({serverTimestamps: "none"}) as IProfile;
+			if(pubDocData){
+				this.publicData = pubDocData;
+
+				this.publicData.modDate = firebaseTimeToDate(this.publicData.modDate);
+				this.publicData.upDate = firebaseTimeToDate(this.publicData.upDate);
+			}
+			else {
+				await setDoc(this.publicDocRef, {
+					name: this.auth.currentUser.displayName,
+					bio: "",
+					photo: this.auth.currentUser.photoURL,
+					upDate: serverTimestamp(),
+					modDate: serverTimestamp()
+				});
+				pubDocSnap = await getDoc(this.publicDocRef);
+				this.publicData = pubDocSnap.data({serverTimestamps: "none"}) as IProfile;
+
+				this.publicData.modDate = firebaseTimeToDate(this.publicData.modDate);
+				this.publicData.upDate = firebaseTimeToDate(this.publicData.upDate);
+			}
+		})();
+		let priv = (async () => {
+			let privDocSnap = await getDoc(this.privDocRef);
+			let privDocData = privDocSnap.data({serverTimestamps: "none"}) as IProfile;
+			if(privDocData){
+				this.privData = privDocData;
+			}
+			else {
+				await setDoc(this.privDocRef, {
+					pref: JSON.stringify(this.petCap.userPrefs)
+				});
+				privDocSnap = await getDoc(this.privDocRef);
+				this.privData = privDocSnap.data({serverTimestamps: "none"}) as IProfile;
+			}
+		})();
+		await Promise.all([pub, priv]);
+		this.drawPrivateData(false);
+		this.drawPublicData(false);
 	}
 	protected res(resourceName: string): string {
 		if(!this._res) return "";

@@ -1,5 +1,4 @@
-import type { FirebaseApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js";
-import type { Auth } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js";
+import type { FirebaseApp } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-app.js";
 import type DataCenter from "../../js/DataCenter.js";
 import type PetCap from "../../js/PetCap.js";
 import type { componentUpdateArgs } from "../BaseComponent.js";

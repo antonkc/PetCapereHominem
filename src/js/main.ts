@@ -1,5 +1,6 @@
-import { FirebaseOptions, initializeApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-analytics.js";
+import { FirebaseOptions, initializeApp } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-analytics.js";
+import { getFirestore, connectFirestoreEmulator, Firestore, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js";
 
 import type { IUserPreferences } from "./types/types.js";
 import PetCap from "./PetCap.js";
@@ -64,6 +65,17 @@ const petCap = new PetCap();
 
 	const fireApp = initializeApp(firebaseConfig);
 	petCap.dataCenter.shared.fireApp = fireApp;
+
+	let fireStore : Firestore;
+	if(window.location.hostname !== "localhost" ){
+		fireStore = getFirestore(fireApp);
+	}
+	if(window.location.hostname === "localhost" ){
+		fireStore = getFirestore(fireApp);
+		connectFirestoreEmulator(fireStore, "localhost", 8080);
+	}
+	//enableIndexedDbPersistence(fireStore);
+	petCap.dataCenter.shared.firestore = fireStore;
 
 	petCap.dataCenter.get(g.cookieEventName, ()=>{
 		if( petCap.userPrefs.allowedUsage.analytics){

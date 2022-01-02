@@ -24,7 +24,7 @@ export type IViewDefinition = {
 export type IViewContainer = {
 	v: Array<IViewDefinition>
 }
-
+// Localization standarts: https://github.com/unicode-org/cldr/tree/main/common/bcp47
 export type IUserPreferences = {
 	allowedUsage: {
 		functional: boolean,
@@ -32,6 +32,9 @@ export type IUserPreferences = {
 		analytics: boolean,
 		adverisement: boolean
 	},
+	dateLocale: "es-es" | "en-us", // https://www.techonthenet.com/js/language_tags.php
+	dateTimeFormatLong: Intl.DateTimeFormatOptions,
+	dateTimeFormat: Intl.DateTimeFormatOptions,
 	lang: string,
 	currency: string
 }

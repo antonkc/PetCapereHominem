@@ -8,7 +8,6 @@ interface ILightProfile {
 }
 
 interface IProfile {
-	id: string,
 	name?: string,
 	bio?: string,
 	photo?: string,

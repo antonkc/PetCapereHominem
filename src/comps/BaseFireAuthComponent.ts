@@ -1,11 +1,9 @@
-import type { FirebaseApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js";
+import type { FirebaseApp } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-app.js";
 import type DataCenter from "../js/DataCenter.js";
 import type PetCap from "../js/PetCap.js";
-import { Auth, getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js";
+import { Auth, getAuth, onAuthStateChanged, connectAuthEmulator } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-auth.js";
 import BaseComponent, { componentUpdateArgs } from "./BaseComponent.js";
 import g from "../js/common/Consts.js";
-
-import { connectAuthEmulator } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js";
 
 class BaseFireAuthComponent<T> extends BaseComponent<T> {
 	protected root: HTMLElement

@@ -1,5 +1,4 @@
 interface ISystemProfile {
-	id: string,
 	reportCount: Number,
 }
 

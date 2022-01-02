@@ -41,9 +41,10 @@ class PetCap {
 	}
 
 	_persistentLoaders: any = {};
-	_counters: any = {}
-	_loaders: any = {}
-	dataCenter: DataCenter
+	_counters: any = {};
+	_loaders: any = {};
+	_resouces: any = {};
+	dataCenter: DataCenter;
 
 	/** Use as readonly. For write operations use PetCap.setStateValue or PetCap.mergeState.
 	 */
@@ -71,18 +72,30 @@ class PetCap {
 			analytics: false,
 			adverisement: false
 		},
+		dateLocale: "es-es",
+		dateTimeFormatLong: {
+			dateStyle: "full",
+			timeStyle: "full",
+			hourCycle: "h24",
+			dayPeriod: "long"
+		},
+		dateTimeFormat: {
+			dateStyle: "short",
+			timeStyle: "short",
+			hourCycle: "h24",
+		},
 		lang: "es-es",
-		currency: "€"
+		currency: "eur"
 	};
 
-	public getNextId: (prefix?: string) => string = (prefix = "_") => {
+	public getNextId(prefix: string = "_"): string {
 		if(this._counters[prefix] === undefined)
 		this._counters[prefix] = 0;
 
 		let id = prefix + this._counters[prefix]++;
 		return id;
 	}
-	public loadComponent = (componentName: string, root: HTMLElement, params: any, isOnlyJs?: Boolean) => {
+	public loadComponent(componentName: string, root: HTMLElement, params: any, isOnlyJs?: Boolean) {
 		isOnlyJs = !!isOnlyJs;
 		if(this._persistentLoaders[componentName] === undefined) {
 			this._persistentLoaders[componentName] = new ComponentLoader(componentName, isOnlyJs);
@@ -90,7 +103,7 @@ class PetCap {
 
 		(this._persistentLoaders[componentName] as ComponentLoader).load(root, params);
 	}
-	public loadView = async (viewName: string) => {
+	public async loadView( viewName: string): Promise<void> {
 		delete this._counters;
 		this._counters = {};
 		Object.keys(this._loaders).forEach( key => this._loaders[key].reset());
@@ -138,16 +151,42 @@ class PetCap {
 				throw `Components is not defined for ${viewObject.name}`;
 			}
 
-			return {status: "loaded layout"};
+			return;
 		}
 		throw "Unable to fetch layout";
 	}
-	public loadRes: (name: string, lang?: string) => Promise<any> = async (name, lang = "es-es") => {
+	public async loadRes(name: string, lang?: string): Promise<any> {
+		lang = lang ?? this.userPrefs.lang;
+		if(this._resouces[lang] && this._resouces[lang][name]){
+			return this._resouces[lang][name];
+		}
 		const res = await fetch(`/assets/lang/${name}/${lang}.json`);
 		if(res.ok){
-			return await res.json();
+			this._resouces[lang] = this._resouces[lang] ?? {};
+			this._resouces[lang][name] = await res.json();
+			return this._resouces[lang][name];
 		}
 		throw new Error("Unable to fetch resources");
+	}
+	public res(name: string, key: string, lang?: string): any {
+		lang = lang ?? this.userPrefs.lang;
+		if(this._resouces[lang] && this._resouces[lang][name]){
+			return this._resouces[lang][name][key] ?? "";
+		}
+		else{
+			this.loadRes(name, lang);
+			return "";
+		}
+	}
+	public getFormatedDate(time: Date, useLongFormat?: boolean): string {
+		if(useLongFormat){
+			const formater = new Intl.DateTimeFormat(this.userPrefs.dateLocale, this.userPrefs.dateTimeFormatLong);
+			return formater.format(time);
+		}
+		else {
+			const formater = new Intl.DateTimeFormat(this.userPrefs.dateLocale, this.userPrefs.dateTimeFormat);
+			return formater.format(time);
+		}
 	}
 
 	/** Should be used only for data that should be stored in history. Otherwise sessionStorage, localStorage and cookies must be used.

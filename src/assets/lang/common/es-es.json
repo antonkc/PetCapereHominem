@@ -69,5 +69,6 @@
 	"dbField_certFalse": "Perfil no certificado",
 	"dbField_certOrgTrue": "Es una organización certificada",
 	"dbField_certOrgFalse": "Organización no certificada",
-	"dbField_subs": "Suscripciones"
+	"dbField_subs": "Suscripciones",
+	"addr_notInformed": "No se ha registrado una dirección"
 }
