@@ -30,7 +30,7 @@ self.addEventListener('fetch', function(event: any) {
 
 			return fetch(fetchRequest).then(
 				function(response) {
-					if(!response || response.status !== 200 || response.type !== 'basic' || /(\.html)|(\.js)|(\/lang\/)|(views?\.json)|(\/layouts\/)/.test(response.url) !== true ) {
+					if(!response || response.status !== 200 || response.type !== 'basic' || /(\.html)|(\.css)|(\.js)|(\/lang\/)|(views?\.json)|(\/layouts\/)/.test(response.url) !== true ) {
 						return response;
 					}
 					var responseToCache = response.clone();

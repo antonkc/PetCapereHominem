@@ -1,6 +1,7 @@
+type IValidationCodes = Array<{code: string, subCodes: Array<string>}>
 type IValitationResult = {
 	valid: Boolean,
-	codes: Array<string>
+	codes: IValidationCodes
 };
 
-export type { IValitationResult }
+export type { IValitationResult, IValidationCodes}

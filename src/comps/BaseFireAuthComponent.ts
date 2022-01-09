@@ -20,6 +20,10 @@ class BaseFireAuthComponent<T> extends BaseComponent<T> {
 		return;
 	};
 
+	protected authDataUpdated(): Promise<void>{
+		return;
+	}
+
 	constructor(root: HTMLElement, params: T, templatesArea: HTMLElement, dataCenter: DataCenter){
 		super(root, params, templatesArea, dataCenter);
 		this.petCap = this.dataCenter.shared.petCap;
@@ -44,7 +48,7 @@ class BaseFireAuthComponent<T> extends BaseComponent<T> {
 						this.auth = getAuth();
 						connectAuthEmulator(this.auth, "http://localhost:9099");
 					}
-					
+
 					this.auth.useDeviceLanguage();
 					this.dataCenter.shared.auth = this.auth;
 				}
@@ -55,7 +59,7 @@ class BaseFireAuthComponent<T> extends BaseComponent<T> {
 					this.isAnonymous = user.isAnonymous;
 					this.authUpdated();
 				}
-				
+
 				onAuthStateChanged(this.auth, (user) => {
 					if (user) {
 						this.isLogged = true
@@ -68,6 +72,15 @@ class BaseFireAuthComponent<T> extends BaseComponent<T> {
 				});
 			}
 		}, true);
+		this.dataCenter.subscribe(g.profileDataChangeEvent, () => {
+			this.authDataUpdated();
+		})
+
+		if(this.dataCenter.shared.auth && this.dataCenter.shared.auth.currentUser){
+			this.auth = this.dataCenter.shared.auth;
+			this.isLogged = true;
+			this.isAnonymous = this.dataCenter.shared.auth.currentUser.isAnonymous;
+		}
 	}
 
 	async update(params: componentUpdateArgs<T>): Promise<typeof this> {

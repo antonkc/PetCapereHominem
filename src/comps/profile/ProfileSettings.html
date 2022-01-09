@@ -14,8 +14,7 @@
 		flex: 1 1 8rem;
 	}
 	.profileSettings .value{
-		flex: 1 1 14rem;
-		font-weight: 600;
+		flex: 1 1 18rem;
 	}
 	.profileSettings .value.small{
 		flex: 1 1 6rem;
@@ -64,7 +63,7 @@
 		<p class="notLoggedText"></p>
 	</div>
 	<div id="formContainer" class="uSpace"></div>
-	<div id="profileSettingsOutput"></div>
+	<div id="profileSettingsOutput" class="profileSettingsOutput"></div>
 	<div class="alternateLogins">
 		<div class="alternateLoginsHeader"><span id="alternateLoginsText"></span></div>
 		<div class="alternateLoginsBody" class="otherLoginForms">
@@ -96,7 +95,6 @@
 	<div class="dbInfoPublic uSpace"></div>
 	<div class="dbInfoPrivate uSpace"></div>
 	<div class="controlsRow"><button id="logOut"></button></div>
-	<div id="profileSettingsOutput"></div>
 </div></template>
 <template id="authDataDisplay"><div class="authDataDisplay display">
 	<h3 id="authDataDisplayTitle"></h3>
@@ -109,38 +107,39 @@
 	<div class="line"><label for="name"></label><input type="text" autocomplete="nickname" class="value" id="name" name="name"></input></div>
 	<div class="line"><label for="email"></label><span class="value" id="email"></span></div>
 	<div class="controlsRow"><button id="cancel"></button><input type="submit"></div>
+	<div class="profileSettingsOutput"></div>
 </div></template>
 <template id="dbPublicDisplay"><div class="dbPublicDisplay display">
 	<h3 id="dbPublicDisplayTitle"></h3>
-	<div class="line"><label for="pbmail"></label><span class="value" id="pbmail"></span></div>
+	<div class="line"><label for="pbmail"></label><span class="value" id="pbMail"></span></div>
 	<div class="line"><label for="pbPhone"></label><span class="value" id="pbPhone"></span></div>
 	<div class="line"><label for="bio"></label><p class="valueBlock" id="bio"></p></div>
 	<div class="line"><label for="pbaddr"></label><span id="pbaddr" class="value"></span></div>
 	<div class="line"><label for="upDate"></label><time id="upDate" class="value small"></time></div>
-	<div class="line"><label for="modDate"></label><time id="modDate"></time></div>
+	<div class="line"><label for="modDate"></label><time id="modDate" class="value small"></time></div>
 	<div class="floatingControls"><button id="editPublic" class="iconControl"><svg><use xlink:href="./assets/icons/symbolCollection.svg#editIcon"></use></svg></button></div>
 </div></template>
 <template id="dbPublicForm"><form class="dbPublicForm">
 	<h3 id="dbPublicFormTitle"></h3>
-	<div class="line"><label for="pbmail"></label><input autocomplete="email" type="text" class="value" id="pbmail" name="pbmail"></input></div>
+	<div class="line"><label for="pbmail"></label><input autocomplete="email" type="text" class="value" id="pbMail" name="pbMail"></input></div>
 	<div class="line"><label for="pbPhone"></label><input autocomplete="tel" type="tel" class="value" id="pbPhone" name="pbPhone"></input></div>
 	<div class="line"><label for="bio"></label><textarea class="valueBlock" id="bio" name="bio"></textarea></div>
 	<div class="line"><label for="pbaddr"></label><span id="pbaddr" class="value"></span></div>
 	<div class="line"><label for="upDate"></label><time id="upDate" class="value small"></time></div>
 	<div class="line"><label for="modDate"></label><time id="modDate" class="value small"></time></div>
 	<div class="controlsRow"><button id="cancel"></button><input type="submit"></div>
+	<div class="profileSettingsOutput"></div>
 </div></template>
 <template id="dbPrivateDisplay"><div class="dbPrivateDisplay display">
 	<h3 id="dbPrivateDisplayTitle"></h3>
 	<div class="line"><label for="addr"></label><span id="addr" class="value"></span></div>
-	<div class="line"><label for="subs"></label><span id="subs" class="value"></span></div>
 	<div class="floatingControls"><button id="editPriv" class="iconControl"><svg><use xlink:href="./assets/icons/symbolCollection.svg#editIcon"></use></svg></button></div>
 </div></template>
 <template id="dbPrivateForm"><form class="dbPrivateForm">
 	<h3 id="dbPrivateFormTitle"></h3>
 	<div class="line"><label for="addr"></label><span id="addr" class="value"></span></div>
-	<div class="line"><label for="subs"></label><p id="subs" class="valueBlock"></p></div>
 	<div class="controlsRow"><button id="cancel"></button><input type="submit"></div>
+	<div class="profileSettingsOutput"></div>
 </div></template>
 
 <template id="profileSettingsMessage"><output class="profileSettingsMessage"></output></template>

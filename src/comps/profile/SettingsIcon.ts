@@ -4,7 +4,6 @@ import type PetCap from "../../js/PetCap.js";
 import type { componentUpdateArgs } from "../BaseComponent.js";
 import { employTemplate } from "../../js/common/utils.js";
 import BaseFireAuthComponent from "../BaseFireAuthComponent.js";
-import g from "../../js/common/Consts.js";
 
 
 // This is an example component
@@ -20,9 +19,10 @@ class SettingsIcon extends BaseFireAuthComponent<SettingsIconArgs>{
 	}
 
 	protected override async authUpdated(){
-		const avatarContainerElem = this.root.querySelector("#avatarContainer") as HTMLSpanElement;
+		const avatarContainerElem = this.root.querySelector("#avatarContainerSett") as HTMLSpanElement;
 		const res = await this.petCap.loadRes("common");
-		if(this.isLogged && this.isAnonymous === false) {
+		if(this.isLogged) {
+			(this.root.querySelector(".edit") as HTMLElement).style.display  = "";
 			const user = this.auth.currentUser;
 
 			if(user.photoURL){
@@ -38,7 +38,14 @@ class SettingsIcon extends BaseFireAuthComponent<SettingsIconArgs>{
 			}
 		}
 		else {
+			(this.root.querySelector(".edit") as HTMLElement).style.display  = "none";
 			employTemplate(this.defaultAvatarTemplate, avatarContainerElem);
+		}
+	}
+
+	protected override async authDataUpdated() {
+		if(this.auth && this.auth.currentUser){
+			this.build();
 		}
 	}
 

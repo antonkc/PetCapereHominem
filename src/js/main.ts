@@ -94,6 +94,11 @@ const petCap = new PetCap();
 				link.setAttribute("title", res[key]);
 			}
 		}
+
+		const key = "nav_" + petCap.appState.view;
+		if( petCap.res("common", key)){
+			(document.querySelector("h1") as HTMLElement).textContent = petCap.res("common", key);
+		}
 	}).catch((err) => {
 		console.error(err);
 	});
@@ -114,6 +119,12 @@ const petCap = new PetCap();
 			let hrefVal = {view: dataTarget};
 			petCap.mergeState(hrefVal, target.getAttribute("alt"));
 			petCap.loadView(dataTarget);
+
+			const key = "nav_" + dataTarget;
+			if( petCap.res("common", key)){
+				(document.querySelector("h1") as HTMLElement).textContent = petCap.res("common", key);
+			}
+
 			return false;
 		}
 	})

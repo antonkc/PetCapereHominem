@@ -23,7 +23,7 @@ class CookieQuestion extends BaseComponent<CookieQuestionArgs>{
 		let petCap = (this.dataCenter.shared.petCap as PetCap);
 
 		this.root.innerHTML = "";
-		petCap.loadRes("Common").then((res: any)=> {
+		petCap.loadRes("common").then((res: any)=> {
 			try {
 				let clone = this.rootTemplate.content.cloneNode(true);
 				this.root.appendChild(clone);

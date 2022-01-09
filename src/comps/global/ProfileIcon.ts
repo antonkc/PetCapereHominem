@@ -34,6 +34,12 @@ class ProfileIcon extends BaseFireAuthComponent<ProfileIconArgs> {
 		}
 	}
 
+	protected override async authDataUpdated() {
+		if(this.auth && this.auth.currentUser){
+			this.build();
+		}
+	}
+
 	protected build(){
 		employTemplate(this.rootTemplate, this.root);
 		this.authUpdated();

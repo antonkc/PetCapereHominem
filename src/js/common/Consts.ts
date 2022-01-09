@@ -1,5 +1,6 @@
 const Consts = {
-	cookieEventName: "cookiePrefs"
+	cookieEventName: "cookiePrefs",
+	profileDataChangeEvent: "profDat"
 }
 
 export default Consts;

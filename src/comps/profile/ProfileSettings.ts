@@ -5,21 +5,33 @@ import type { IInfoPromt } from "../../js/types/InfoPromt.js";
 import type IProfile from "../../js/common/dataClasses/IProfile.js";
 import type IPrivateProfile from "../../js/common/dataClasses/IPrivateProfile.js";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, updateProfile, updateEmail } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-auth.js";
-import { employTemplate, fillPlaceholders, firebaseTimeToDate, getAddrString, getInnerValue, getLoader, populateWithIdSelector } from "../../js/common/utils.js";
-import { DocumentData, DocumentReference, Firestore, updateDoc, doc, getDoc, serverTimestamp, collection, setDoc } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js";
+import { employTemplate, fillPlaceholders, firebaseTimeToDate, getAddrString, getFormData, getInnerValue, getLoader, populateWithIdSelector, setHtmlElementsData } from "../../js/common/utils.js";
+import { DocumentData, DocumentReference, Firestore, updateDoc, doc, getDoc, serverTimestamp, collection, setDoc, getDocFromCache } from "https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js";
 import BaseFireAuthComponent from "../BaseFireAuthComponent.js";
 import { InfoPromtType } from "../../js/types/InfoPromt.js";
 import DbColletions from "../../js/common/dataClasses/DbCollections.js";
+import { isLong, isNotEmpty, isSecure, isValidEmail, isValidPhoneNumber, test, testMatch } from "../../js/common/tests.js";
+import Consts from "../../js/common/Consts.js";
 
-type ILoginInformation = {
+type ILoginInfo = {
 	email: string,
 	password: string
 }
-type IRegisterInformation = {
+type IRegisterInfo = {
 	email: string,
 	name: string,
 	password: string,
 	password2: string
+}
+type IAuthUpdateInfo = {
+	name: string
+}
+type IPublicUpdateInfo = {
+	pbMail: string,
+	pbPhone: string,
+	bio: string
+}
+type IPrivateUpdateInfo = {
 }
 
 const templateNames = ["notLogged","loginForm","registerForm","logged","authDataDisplay","authDataForm","dbPublicDisplay","dbPublicForm","dbPrivateDisplay","dbPrivateForm","profileSettingsMessage"] as const;
@@ -64,125 +76,217 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 		return this;
 	}
 	protected override async authUpdated() {
-		this.drawComponent();
 		if(this.auth && this.auth.currentUser){
 			this.bindDbDocs();
 		}
+		this.drawComponent();
+	}
+	protected override async authDataUpdated() {
+		if(this.auth && this.auth.currentUser){
+			this.root.querySelector('.loggedText').textContent = fillPlaceholders(this.res("loggedAs"), this.auth.currentUser.displayName);
+			let authDisplay = this.root.querySelector('.authInfo') as HTMLElement;
+			authDisplay.querySelector("#name").textContent = this.auth.currentUser.displayName;
+			authDisplay.querySelector("#email").textContent = this.auth.currentUser.email;
+			setHtmlElementsData( this.root.querySelector(".dbInfoPublic"), [this.publicData], {
+				pbaddr: (val) =>{
+					let addrStr = getAddrString(val);
+					return addrStr !== "" ? addrStr : this.res("addr_notInformed");
+				},
+				upDate: (val) => {
+					return {
+						textContent: val ? this.petCap.getFormatedDate( val) : "",
+						dateTime: val ? val.toUTCString() : ""
+					}
+				},
+				modDate: (val) => {
+					return {
+						textContent: val ? this.petCap.getFormatedDate( val) : "",
+						dateTime: val ? val.toUTCString() : ""
+					}
+				}
+			});
+			setHtmlElementsData( this.root.querySelector(".dbInfoPrivate"), [this.privData]);
+		}
 	}
 
-	protected async loginInAction(form: HTMLFormElement) {
-		this.clearMessages();
-		let values = this.getFormData<ILoginInformation>(form);
-		let validation = this.validateLogIn(values);
-		await this.authSignFlow( async () => {
-			await signInWithEmailAndPassword(this.auth, values.email, values.password);
+	protected async loginInAction(form: HTMLFormElement): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			this.clearMessages();
+			let values = getFormData<ILoginInfo>(form);
+			let validation = this.validateLogIn(values);
+			this.iterationFlow( this.root, async () => {
+				form.innerHTML = ""
+				form.appendChild(getLoader(10));
 
-		}, validation);
-	}
-	protected async registerAction(form: HTMLFormElement) {
-		this.clearMessages();
-		let values = this.getFormData<IRegisterInformation>(form);
-		let validation = this.validateLogIn(values);
-		
-		await this.authSignFlow( async () => {
-			await createUserWithEmailAndPassword(this.auth, values.email, values.password);
-			await updateProfile(this.auth.currentUser, {
-				displayName: values.name
-			});
-		}, validation);
-	}
-	protected async updateAuthAction(form: HTMLFormElement) {
-		this.clearMessages();
-		let values = this.getFormData<IRegisterInformation>(form);
-		let validation = this.validateAuthForm(values);
-		
-		await this.authSignFlow( async () => {
-			await updateProfile(this.auth.currentUser, {
-				displayName: values.name
-			});
-		}, validation);
-	}
-	protected async updatePublicAction(form: HTMLFormElement) {
-		this.clearMessages();
-		let values = this.getFormData<IRegisterInformation>(form);
-		let validation = this.validateAuthForm(values);
-		
-		await this.authSignFlow( async () => {
-			await updateProfile(this.auth.currentUser, {
-				displayName: values.name
-			});
-		}, validation);
-	}
-	protected async googleSignInAction() {
-		this.clearMessages();
-		await this.authSignFlow( async () => {
-			const provider = new GoogleAuthProvider();
-			const result = await signInWithPopup(this.auth, provider);
+				await signInWithEmailAndPassword(this.auth, values.email, values.password);
+				resolve(true);
+			}, async (err) => {
+				setHtmlElementsData(this.drawLoginForm(), [values]);
+				resolve(false);
+			}, validation);
 		});
 	}
-	
+	protected async registerAction(form: HTMLFormElement): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			this.clearMessages();
+			let values = getFormData<IRegisterInfo>(form);
+			let validation = this.validateRegister(values);
+
+			this.iterationFlow( this.root, async () => {
+				form.innerHTML = ""
+				form.appendChild(getLoader(19));
+
+				await createUserWithEmailAndPassword(this.auth, values.email, values.password);
+				await updateProfile(this.auth.currentUser, {
+					displayName: values.name
+				});
+
+				resolve(true);
+			}, async (err) => {
+				setHtmlElementsData(this.drawRegisterForm(), [values]);
+				resolve(false);
+			}, validation);
+		});
+	}
+	protected async googleSignInAction(): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			this.clearMessages();
+			this.iterationFlow( this.root, async () => {
+				const provider = new GoogleAuthProvider();
+				const result = await signInWithPopup(this.auth, provider);
+				resolve(true);
+			}, async (err) => {
+				resolve(false);
+			});
+		})
+	}
+
+	protected async updateAuthAction(form: HTMLFormElement): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			this.clearMessages();
+			let values = getFormData<IAuthUpdateInfo>(form);
+			let validation = this.validateAuthForm(values);
+
+			this.iterationFlow( form.parentElement, async () => {
+				form.innerHTML = ""
+				form.appendChild(getLoader(12));
+
+				let profUpdate = updateProfile(this.auth.currentUser, {
+					displayName: values.name
+				});
+
+				let pubUpdate = setDoc(this.publicDocRef, {
+					name: values.name
+				}, {merge: true});
+
+				await Promise.all([profUpdate, pubUpdate]);
+				this.dataCenter.emmit(Consts.profileDataChangeEvent, true);
+
+				resolve(true);
+			}, async (err) => {
+				setHtmlElementsData( this.drawAuthDataForm(), [values]);
+				resolve(false);
+			}, validation);
+		});
+	}
+	protected async updatePublicAction(form: HTMLFormElement): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			this.clearMessages();
+			let values = getFormData<IPublicUpdateInfo>(form);
+			let validation = this.validatePubForm(values);
+
+			this.iterationFlow( form.parentElement, async () => {
+				form.innerHTML = ""
+				form.appendChild(getLoader(26));
+
+				await setDoc(this.publicDocRef, {
+					bio: values.bio,
+					pbMail: values.pbMail,
+					pbPhone: values.pbPhone
+				}, {merge: true});
+
+				this.publicData = (await getDoc(this.publicDocRef)).data();
+				this.publicData.modDate = firebaseTimeToDate(this.publicData.modDate);
+				this.publicData.upDate = firebaseTimeToDate(this.publicData.upDate);
+				this.dataCenter.emmit(Consts.profileDataChangeEvent, true);
+
+				resolve(true);
+			}, async (err) => {
+				setHtmlElementsData(this.drawPublicDataForm(), [values, this.publicData]);
+				resolve(false);
+			}, validation);
+		});
+	}
+	protected async updatePrivateAction(form: HTMLFormElement): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			this.clearMessages();
+			let values = getFormData<IPrivateUpdateInfo>(form);
+			let validation = this.validatePrivForm(values);
+
+			this.iterationFlow( form.parentElement, async () => {
+				form.innerHTML = ""
+				form.appendChild(getLoader(10));
+				// Currently, nothing to do
+				this.privData = (await getDoc(this.privDocRef)).data();
+				this.dataCenter.emmit(Consts.profileDataChangeEvent, true);
+
+				resolve(true);
+			}, async (err) => {
+				setHtmlElementsData(this.drawPrivateDataForm(), [values, this.privData]);
+				resolve(false);
+			}, validation);
+		});
+	}
+
 	//#region validation
-	protected validateLogIn(values: ILoginInformation): IValitationResult {
+	protected validateLogIn(values: ILoginInfo): IValitationResult {
 		let result: IValitationResult = {
 			valid: true,
 			codes: []
 		};
-		this.validatePass(result, values.password, null);
-		this.validateMail(result, values.email);
+		test(isNotEmpty, values.email, result, "err_empty", ["email"])
+		&& test(isValidEmail, values.email, result, "err_badFormat", ["email"]);
+		test(isNotEmpty, values.password, result, "err_empty", ["password"]);
 		return result;
 	}
-	protected validateRegister(values: IRegisterInformation): IValitationResult {
+	protected validateRegister(values: IRegisterInfo): IValitationResult {
 		let result: IValitationResult = {
 			valid: true,
 			codes: []
 		};
-		this.validatePass(result, values.password, values.password2);
-		this.validateMail(result, values.email);
-		this.validateName(result, values.name);
+		test(isNotEmpty, values.email, result, "err_empty", ["email"])
+		&& test(isValidEmail, values.email, result, "err_badFormat", ["email"]);
+		test(isNotEmpty, values.name, result, "err_empty", ["name"])
+		&& test(isLong.bind(null, 4), values.name, result, "err_nameShort", null);
+		testMatch(values.password2, values.password, result, "err_passNotSame", null);
+		test(isLong.bind(null, 9), values.password, result, "err_passShort", null);
+		test(isSecure, values.password, result, "err_passTooSimple", null);
 		return result;
 	}
-	protected validateAuthForm(values: IRegisterInformation): IValitationResult {
+	protected validateAuthForm(values: IAuthUpdateInfo): IValitationResult {
 		let result: IValitationResult = {
 			valid: true,
 			codes: []
 		};
-		this.validateName(result, values.name);
+		test(isNotEmpty, values.name, result, "err_empty", ["name"])
+		&& test(isLong.bind(null, 4), values.name, result, "err_nameShort", null);
 		return result;
 	}
-	protected validatePass(validation: IValitationResult, password: string, password2: string | null): IValitationResult {
-		if(password2 !== null && password !== password2){
-			validation.valid = false;
-			validation.codes.push("err_passNotSame");
-		}
-		if(password.length < 9){
-			validation.valid = false;
-			validation.codes.push("err_passShort");
-		}
-		if((/[0-9]/).test(password) === false || (/[a-z]/).test(password) === false || (/[A-Z]/).test(password) === false ){
-			validation.valid = false;
-			validation.codes.push("err_passTooSimple");
-		}
-
-		return validation;
+	protected validatePubForm(values: IPublicUpdateInfo): IValitationResult {
+		let result: IValitationResult = {
+			valid: true,
+			codes: []
+		};
+		values.pbMail && test(isValidEmail, values.pbMail, result, "err_badFormat", ["dbField_pbMail"]);
+		values.pbPhone && test(isValidPhoneNumber, values.pbPhone, result, "err_badFormat", ["dbField_pbPhone"]);
+		return result;
 	}
-	protected validateMail(validation: IValitationResult, email: string): IValitationResult {
-		if(email.replace(/ \t\r\n/g,'') === ""){
-			validation.valid = false;
-			validation.codes.push("err_emailEmpty");
-		}
-		if((/^[a-z0-9\._-]+@[a-z0-9\._-]+.[a-z]+$/i).test(email)){
-			validation.valid = false;
-			validation.codes.push("err_emailBadFormat");
-		}
-
-		return validation;
-	}
-	protected validateName(validation: IValitationResult, name: string): IValitationResult {
-		if(name.replace(/ \t\r\n/g,'') === ""){
-			validation.valid = false;
-			validation.codes.push("err_nameEmpty");
-		}
-		return validation;
+	protected validatePrivForm(values: IPrivateUpdateInfo): IValitationResult {
+		let result: IValitationResult = {
+			valid: true,
+			codes: []
+		};
+		return result;
 	}
 	//#endregion validation
 
@@ -197,13 +301,13 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 			this.root.appendChild(getLoader(10));
 		}
 	}
-	protected drawMessages( resources: any, messages: Array<IInfoPromt>): void {
-		let outputDiv = this.root.querySelector("#profileSettingsOutput") as HTMLElement;
+	protected drawMessages(root: HTMLElement, resources: any, messages: Array<IInfoPromt>): void {
+		let outputDiv = root.querySelector(".profileSettingsOutput") as HTMLElement;
 
 		messages.forEach((msg) => {
 			let text = msg.placeHolderFillers ?
 				fillPlaceholders.bind(null, resources[msg.baseCode]).apply(null, msg.placeHolderFillers) :
-				resources[msg.baseCode];
+				resources[msg.baseCode];//*/
 			let msgElem = employTemplate(this.templates.profileSettingsMessage, outputDiv, true);
 			msgElem.textContent = text;
 			switch (msg.msgType) {
@@ -220,8 +324,11 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 		});
 	}
 	protected clearMessages(): void {
-		let outputDiv = this.root.querySelector("#profileSettingsOutput") as HTMLElement;
-		outputDiv.innerHTML = "";
+		let outputDivs = this.root.querySelectorAll(".profileSettingsOutput") as NodeList;
+		for (let i = 0; i < outputDivs.length; i++) {
+			const elem = outputDivs[i] as HTMLElement;
+			elem.innerHTML = "";
+		}
 	}
 	//#endregion drawBasic
 	//#region drawLogged
@@ -242,7 +349,7 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 		this.drawPublicDataDisplay();
 		this.drawPrivateDataDisplay();
 	}
-	protected drawAuthDataDisplay(): void {
+	protected drawAuthDataDisplay(): HTMLElement {
 		const display = employTemplate(this.templates.authDataDisplay, this.root.querySelector(".authInfo")) as HTMLElement;
 		display.querySelector('#authDataDisplayTitle').textContent = this.res("t_profile_auth");
 
@@ -258,13 +365,15 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 			ev.preventDefault();
 			this.drawAuthDataForm();
 		});
+		return display;
 	}
-	protected drawAuthDataForm(): void {
+	protected drawAuthDataForm(): HTMLFormElement {
 		const form = employTemplate<HTMLFormElement>(this.templates.authDataForm, this.root.querySelector(".authInfo"));
 		form.addEventListener("submit", async (ev) => {
 			ev.preventDefault();
-			await this.updateAuthAction(form);
-			this.drawAuthDataDisplay();
+			if(await this.updateAuthAction(form)){
+				this.drawAuthDataDisplay();
+			}
 		});
 		form.querySelector('#authDataFormTitle').textContent = this.res("t_profile_auth");
 
@@ -281,8 +390,9 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 		});
 
 		(form.querySelector('[type="submit"]') as HTMLInputElement).value = this.res("submit");
+		return form;
 	}
-	protected drawPublicDataDisplay(): void {
+	protected drawPublicDataDisplay(): HTMLElement {
 		const display = employTemplate(this.templates.dbPublicDisplay, this.root.querySelector(".dbInfoPublic")) as HTMLElement;
 		display.querySelector('#dbPublicDisplayTitle').textContent = this.res("t_profile_public");
 
@@ -300,14 +410,33 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 			this.drawPublicDataForm();
 		});
 
-		this.drawPublicData(false);
+		setHtmlElementsData(display, [this.publicData], {
+			pbaddr: (val) =>{
+				let addrStr = getAddrString(val);
+				return addrStr !== "" ? addrStr : this.res("addr_notInformed");
+			},
+			upDate: (val) => {
+				return {
+					textContent: val ? this.petCap.getFormatedDate( val) : "",
+					dateTime: val ? val.toUTCString() : ""
+				}
+			},
+			modDate: (val) => {
+				return {
+					textContent: val ? this.petCap.getFormatedDate( val) : "",
+					dateTime: val ? val.toUTCString() : ""
+				}
+			}
+		});
+		return display;
 	}
-	protected drawPublicDataForm(): void {
+	protected drawPublicDataForm(): HTMLFormElement {
 		const form = employTemplate<HTMLFormElement>(this.templates.dbPublicForm, this.root.querySelector(".dbInfoPublic"));
-		form.addEventListener("submit", (ev) => {
+		form.addEventListener("submit", async (ev) => {
 			ev.preventDefault();
-			// TODO: change data as needed
-			this.drawPublicDataDisplay();
+			if(await this.updatePublicAction(form)){
+				this.drawPublicDataDisplay();
+			}
 		});
 		form.querySelector('#dbPublicFormTitle').textContent = this.res("t_profile_public");
 
@@ -327,34 +456,32 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 
 		(form.querySelector('.dbInfoPublic [type="submit"]') as HTMLInputElement).value = this.res("submit");
 
-		this.drawPublicData(true);
+		setHtmlElementsData(form, [this.publicData], {
+			pbaddr: (val) =>{
+				let addrStr = getAddrString(val);
+				return addrStr !== "" ? addrStr : this.res("addr_notInformed");
+			},
+			upDate: (val) => {
+				return {
+					textContent: val ? this.petCap.getFormatedDate( val) : "",
+					dateTime: val ? val.toUTCString() : ""
+				}
+			},
+			modDate: (val) => {
+				return {
+					textContent: val ? this.petCap.getFormatedDate( val) : "",
+					dateTime: val ? val.toUTCString() : ""
+				}
+			}
+		});
+		return form;
 	}
-	protected drawPublicData(isform: boolean): void{
-		const elem = this.root.querySelector(".dbInfoPublic") as HTMLElement;
-		if(isform){
-			(elem.querySelector('#pbmail') as HTMLInputElement).value =this.publicData.pbMail ? this.publicData.pbMail : "";
-			(elem.querySelector('#pbPhone') as HTMLInputElement).value =this.publicData.pbPhone ? this.publicData.pbPhone : "";
-			(elem.querySelector('#bio') as HTMLInputElement).value =this.publicData.bio ? this.publicData.bio : "";
-		}
-		else {
-			elem.querySelector('#pbmail').textContent =this.publicData.pbMail ? this.publicData.pbMail : "";
-			elem.querySelector('#pbPhone').textContent =this.publicData.pbPhone ? this.publicData.pbPhone : "";
-			elem.querySelector('#bio').textContent =this.publicData.bio ? this.publicData.bio : "";
-		}
-		let addr = getAddrString(this.publicData.addr);
-		elem.querySelector('#pbaddr').textContent = addr !== "" ? addr : this.res("addr_notInformed");
-		elem.querySelector('#upDate').textContent = this.publicData.upDate ? this.petCap.getFormatedDate( this.publicData.upDate) : "";
-		(elem.querySelector('#upDate') as HTMLTimeElement).dateTime = this.publicData.upDate ? this.publicData.upDate.toUTCString() : "";
-		elem.querySelector('#modDate').textContent = this.publicData.modDate ? this.petCap.getFormatedDate(this.publicData.modDate) : "";
-		(elem.querySelector('#modDate') as HTMLTimeElement).dateTime = this.publicData.modDate ? this.publicData.modDate.toUTCString() : "";
-	}
-	protected drawPrivateDataDisplay(): void {
+	protected drawPrivateDataDisplay(): HTMLElement {
 		const display = employTemplate(this.templates.dbPrivateDisplay, this.root.querySelector(".dbInfoPrivate")) as HTMLElement;
 		display.querySelector('#dbPrivateDisplayTitle').textContent = this.res("t_profile_priv");
 
 		display.querySelector('[for="addr"]').textContent = this.res("dbField_addr");
-		display.querySelector('[for="subs"]').textContent = this.res("dbField_subs");
-		
+
 		const editBtn = display.querySelector("#editPriv") as HTMLButtonElement;
 		editBtn.title = fillPlaceholders( this.res("editSomething"), this.res("t_profile_priv"));
 		editBtn.addEventListener("click", (ev) => {
@@ -362,19 +489,22 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 			this.drawPrivateDataForm();
 		});
 
-		this.drawPrivateData(false);
+		setHtmlElementsData(display, [this.privData], {
+			addr: getAddrString
+		});
+		return display;
 	}
-	protected drawPrivateDataForm(): void {
+	protected drawPrivateDataForm(): HTMLFormElement {
 		const form = employTemplate<HTMLFormElement>(this.templates.dbPrivateForm, this.root.querySelector(".dbInfoPrivate"));
-		form.addEventListener("submit", (ev) => {
+		form.addEventListener("submit", async (ev) => {
 			ev.preventDefault();
-			// TODO: change data as needed
-			this.drawPrivateDataDisplay();
+			if(await this.updatePrivateAction(form)){
+				this.drawPrivateDataDisplay();
+			}
 		});
 		form.querySelector('#dbPrivateFormTitle').textContent = this.res("t_profile_priv");
 
 		form.querySelector('[for="addr"]').textContent = this.res("dbField_addr");
-		form.querySelector('[for="subs"]').textContent = this.res("dbField_subs");
 
 		const cancelBtn = form.querySelector("#cancel") as HTMLButtonElement;
 		cancelBtn.textContent = this.res("cancel");
@@ -384,15 +514,12 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 		});
 
 		(form.querySelector('[type="submit"]') as HTMLInputElement).value = this.res("submit");
-		
-		this.drawPrivateData(true);
-	}
-	protected drawPrivateData(isform: boolean): void{
-		const elem = this.root.querySelector(".dbInfoPrivate");
 
-		let addr = getAddrString(this.privData.addr);
-		elem.querySelector('#addr').textContent = addr !== "" ? addr : this.res("addr_notInformed");
-		elem.querySelector('#subs').textContent = "";
+		setHtmlElementsData(form, [this.privData], {
+			addr: getAddrString
+		});
+
+		return form;
 	}
 	//#endregion drawLogged
 	//#region drawNotLogged
@@ -409,7 +536,7 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 
 		this.drawLoginForm();
 	}
-	protected drawLoginForm(): void {
+	protected drawLoginForm(): HTMLFormElement {
 		(this.root.querySelector("#compTitle") as HTMLHeadingElement).textContent = this.res("t_profile_ini");
 
 		const form = employTemplate<HTMLFormElement>(this.templates.loginForm, this.root.querySelector("#formContainer"));
@@ -428,7 +555,7 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 		const passInput = (form.querySelector('#password') as HTMLInputElement);
 		passInput.value = this.keepLoginInfo["password"];
 		passInput.placeholder = this.res("placeHolPass");
-		
+
 		let loginSubmit = form.querySelector("#login") as HTMLInputElement;
 		loginSubmit.value = this.res("login");
 
@@ -441,8 +568,10 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 			this.clearMessages();
 			this.drawRegisterForm();
 		});
+
+		return form;
 	}
-	protected drawRegisterForm(): void {
+	protected drawRegisterForm(): HTMLFormElement {
 		(this.root.querySelector("#compTitle") as HTMLHeadingElement).textContent = this.res("t_profile_reg");
 
 		const form = employTemplate<HTMLFormElement>(this.templates.registerForm, this.root.querySelector("#formContainer"));
@@ -480,30 +609,20 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 
 		let registerSubmit = form.querySelector("#register") as HTMLInputElement;
 		registerSubmit.value = this.res("register");
+
+		return form;
 	}
 	//#endregion drawNotLogged
 
-	protected getFormData<T = any>(form: HTMLFormElement): T {
-		let result: any = {};
-		const relevantElems = form.elements;
-		for (let i = 0; i < relevantElems.length; i++) {
-			const elem = relevantElems[i] as HTMLInputElement;
-			
-			if(elem["name"]){
-				result[elem["name"]] = elem["value"];
-			}
-		}
-
-		return result as T;
-	}
-	protected async authSignFlow(callback: () => Promise<void>, validation?: IValitationResult) {
+	protected async iterationFlow(iterationRoot: HTMLElement, callback: () => Promise<void>, errorCallBack: (err: any) => Promise<void>, validation?: IValitationResult) {
 		if(!validation || validation && validation.valid){
 			try {
 				await callback();
 			}
 			catch (err) {
 				console.error(err);
-				this.drawMessages(this._res, [{
+				errorCallBack(err);
+				this.drawMessages(iterationRoot, this._res, [{
 					baseCode: "err_someErr",
 					msgType: InfoPromtType.error,
 					placeHolderFillers: [err.message]
@@ -511,11 +630,12 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 			}
 		}
 		else {
-			this.drawMessages(this._res, validation.codes.map((val) => {
+			this.drawMessages(iterationRoot, this._res, validation.codes.map((val) => {
+				let subValues = val.subCodes ? val.subCodes.map((subcode) => this.res(subcode)) : null;
 				return {
-					baseCode: val,
+					baseCode: val.code,
 					msgType: InfoPromtType.error,
-					placeHolderFillers: null
+					placeHolderFillers: subValues
 				}
 			}));
 		}
@@ -566,8 +686,40 @@ class ProfileSettings extends BaseFireAuthComponent<ProfileSettingsArgs>{
 			}
 		})();
 		await Promise.all([pub, priv]);
-		this.drawPrivateData(false);
-		this.drawPublicData(false);
+		setHtmlElementsData(this.root.querySelector(".dbInfoPrivate"), [this.privData], {
+			addr: (val) =>{
+				let addrStr = getAddrString(val);
+				return addrStr !== "" ? addrStr : this.res("addr_notInformed");
+			}
+		});
+		setHtmlElementsData(this.root.querySelector(".dbInfoPublic"), [this.publicData], {
+			pbaddr: (val) =>{
+				let addrStr = getAddrString(val);
+				return addrStr !== "" ? addrStr : this.res("addr_notInformed");
+			},
+			upDate: (val) => {
+				return {
+					textContent: val ? this.petCap.getFormatedDate( val) : "",
+					dateTime: val ? val.toUTCString() : ""
+				}
+			},
+			modDate: (val) => {
+				return {
+					textContent: val ? this.petCap.getFormatedDate( val) : "",
+					dateTime: val ? val.toUTCString() : ""
+				}
+			}
+		});
+	}
+	protected async updatePublicData(data: IProfile){
+		if(Object.keys( data).length > 0){
+			await setDoc(this.publicDocRef, data, {merge: true});
+		}
+	}
+	protected async updatePrivateData(data: IPrivateProfile){
+		if(Object.keys( data).length > 0){
+			await setDoc(this.privDocRef, data, {merge: true});
+		}
 	}
 	protected res(resourceName: string): string {
 		if(!this._res) return "";
